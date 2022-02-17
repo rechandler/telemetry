@@ -1,17 +1,18 @@
 {
   "name": "telem_app",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "main": "main.js",
   "homepage": "./",
   "author": "Ryann Chandler",
   "description": "Telementry Data for iRacing",
+  "repository": "https://github.com/rechandler/telemetry.git",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "electron-squirrel-startup": "^1.0.0",
-    "node-irsdk": "file:/Users/ryann/projects/node-irsdk",
+    "node-irsdk": "github:rechandler/node-irsdk",
     "paper": "^0.12.15",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -25,7 +26,8 @@
     "eject": "react-scripts eject",
     "electron-dev": "electron .",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
   },
   "eslintConfig": {
     "extends": [
@@ -51,8 +53,10 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.63",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
     "@electron-forge/maker-zip": "^6.0.0-beta.63",
+    "@electron-forge/publisher-github": "^6.0.0-beta.63",
     "electron": "17.0.1",
-    "electron-rebuild": "^3.2.7"
+    "electron-rebuild": "^3.2.7",
+    "update-electron-app": "^2.0.1"
   },
   "config": {
     "forge": {
@@ -78,6 +82,18 @@
         {
           "name": "@electron-forge/maker-rpm",
           "config": {}
+        }
+      ],
+      "publishers": [
+        {
+          "name": "@electron-forge/publisher-github",
+          "config": {
+            "repository": {
+              "owner": "rechandler",
+              "name": "telemetry"
+            },
+            "prerelease": true
+          }
         }
       ]
     }

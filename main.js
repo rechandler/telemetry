@@ -1,6 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 
 if (require('electron-squirrel-startup')) return;
+require('update-electron-app')()
 
 const iracing = require('node-irsdk').getInstance()
 
