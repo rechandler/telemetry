@@ -1,0 +1,85 @@
+{
+  "name": "telem_app",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.js",
+  "homepage": "./",
+  "author": "Ryann Chandler",
+  "description": "Telementry Data for iRacing",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "node-irsdk": "file:/Users/ryann/projects/node-irsdk",
+    "paper": "^0.12.15",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "5.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron-dev": "electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
+    "electron": "17.0.1",
+    "electron-rebuild": "^3.2.7"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "telem_app",
+            "loadingGif": "./loader.gif"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  }
+}
