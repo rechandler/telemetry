@@ -1,9 +1,13 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, autoUpdater } = require('electron')
 
 if (require('electron-squirrel-startup')) return;
-require('update-electron-app')()
 
 const iracing = require('node-irsdk').getInstance()
+
+const UPDATE_CHECK_INTERVAL = 10 * 60 * 1000
+const server = 'https://telemetry-lc9vbg16r-rechandler.vercel.app'
+const url = `${server}/update/${process.platform}/${app.getVersion()}`  
+autoUpdater.setFeedURL({ url })
 
 function createWindow () {
   // Create the browser window.
@@ -60,6 +64,23 @@ app.on('activate', () => {
   }
 })
 
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+  const dialogOpts = {
+    type: 'info',
+    buttons: ['Restart', 'Later'],
+    title: 'Application Update',
+    message: process.platform === 'win32' ? releaseNotes : releaseName,
+    detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+  }
+dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    if (returnValue.response === 0) autoUpdater.quitAndInstall()
+  })
+})
+
+setInterval(() => {
+  autoUpdater.checkForUpdates()
+}, UPDATE_CHECK_INTERVAL)
+autoUpdater.checkForUpdates()
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
