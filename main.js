@@ -8,7 +8,7 @@ const iracing = require('node-irsdk').getInstance()
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 305,
+    width: 300,
     height: 205,
     frame: false,
     webPreferences: {
@@ -17,10 +17,13 @@ function createWindow () {
     }
   })
 
-  //load the index.html from a url
-  // win.loadURL('http://localhost:3000');
-
-  win.loadFile(`${__dirname}/build/index.html`)
+  if(app.isPackaged) {
+    // Production Mode
+    win.loadFile(`${__dirname}/build/index.html`)
+  } else {
+    // Local Development. Must start react-dev-server
+    win.loadURL('http://localhost:3000');
+  }
 
   // Open the DevTools.
   // win.webContents.openDevTools()

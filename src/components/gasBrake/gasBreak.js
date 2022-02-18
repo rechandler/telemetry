@@ -1,6 +1,7 @@
 
 import { useEffect, useRef } from 'react'
 import Paper, {Point} from 'paper'
+import { Segment } from 'paper/dist/paper-core'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -17,7 +18,7 @@ const GasBreak = () => {
         throttleScope.setup(throttleCanvas)
         throttleScope.activate()
         const throttleTelemetryPath = new throttleScope.Path();
-        initTelemetryPath(throttleTelemetryPath, "#66CDAA")
+        initTelemetryPath(throttleTelemetryPath, "rgba(40, 173, 72)", "rgba(40, 173, 72, 0.2)")
         throttleScope.view.draw()
         
         const brakeCanvas = brakeCanvasRef.current
@@ -25,7 +26,7 @@ const GasBreak = () => {
         brakeScope.setup(brakeCanvas)
         brakeScope.activate()
         const brakeTelemetryPath = new brakeScope.Path(); 
-        initTelemetryPath(brakeTelemetryPath, "	#FF6347")
+        initTelemetryPath(brakeTelemetryPath, "rgba(225, 99, 71)", "rgba(225, 99, 71, 0.2)")
         brakeScope.view.draw()
 
         ipcRenderer.on('telemetry', (_evt, args) => { 
@@ -34,27 +35,33 @@ const GasBreak = () => {
         })
     }, [])
 
-    const initTelemetryPath = (telemetryPath, color) => {
+    const initTelemetryPath = (telemetryPath, strokeColor, fillColor) => {
+        telemetryPath.strokeColor = strokeColor;
+        telemetryPath.fillColor = fillColor
+        // telemetryPath.strokeWidth = 2
 
-        telemetryPath.strokeColor = color;
-        telemetryPath.strokeWidth = 3
-       
         for (let i = 0; i < SEGMENT_LENGTH; i++) {
             telemetryPath.add(new Point(i, 100))
         }
+        
         telemetryPath.smooth()
     }
 
     const editTelemetrySegments = (telemetryPath, throttle) => {
-        telemetryPath.removeSegment(0)        
+        
         telemetryPath.segments = telemetryPath.segments.map(segment => {
             segment.point.x--
             return segment
         })
-        telemetryPath.add(new Point(SEGMENT_LENGTH, 100 - (throttle*100)))
+        telemetryPath.removeSegment(1)        
+        telemetryPath.removeSegment(299)        
+
+        telemetryPath.insert(298, new Point(301, 100 - (throttle*100)))
+
+        // Always make sure our end point is the bottom so we will close along the bottom of the path 
+        telemetryPath.insert(299, new Point(301, 100))
+        telemetryPath.closed = true;
         
-        // This will fill it in by completing the line
-        telemetryPath.add(telemetryPath.view.bounds.bottomRight)
     }
 
     return (
