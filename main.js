@@ -12,9 +12,10 @@ autoUpdater.setFeedURL({ url })
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 300,
-    height: 205,
+    width: 505,
+    height: 115,
     frame: false,
+    transparent: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -24,6 +25,7 @@ function createWindow () {
   if(app.isPackaged) {
     // Production Mode
     win.loadFile(`${__dirname}/build/index.html`)
+    setupAutoUpdater()
   } else {
     // Local Development. Must start react-dev-server
     win.loadURL('http://localhost:3000');
@@ -64,23 +66,25 @@ app.on('activate', () => {
   }
 })
 
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-  const dialogOpts = {
-    type: 'info',
-    buttons: ['Restart', 'Later'],
-    title: 'Application Update',
-    message: process.platform === 'win32' ? releaseNotes : releaseName,
-    detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-  }
-dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.quitAndInstall()
+const setupAutoUpdater = () => {
+  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+      type: 'info',
+      buttons: ['Restart', 'Later'],
+      title: 'Application Update',
+      message: process.platform === 'win32' ? releaseNotes : releaseName,
+      detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+    }
+  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+      if (returnValue.response === 0) autoUpdater.quitAndInstall()
+    })
   })
-})
 
-setInterval(() => {
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, UPDATE_CHECK_INTERVAL)
   autoUpdater.checkForUpdates()
-}, UPDATE_CHECK_INTERVAL)
-autoUpdater.checkForUpdates()
+}
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

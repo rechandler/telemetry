@@ -5,11 +5,13 @@ import { Segment } from 'paper/dist/paper-core'
 
 const { ipcRenderer } = window.require('electron')
 
-const SEGMENT_LENGTH = 300
+const SEGMENT_LENGTH = 400
+const MPH_CONVERSION = 2.237
 const GasBreak = () => {
 
     const throttleCanvasRef = useRef(null)
     const brakeCanvasRef = useRef(null)
+    const speedRef = useRef(null)
     
     // useEffect so the ref will be set
     useEffect(() => {
@@ -32,8 +34,14 @@ const GasBreak = () => {
         ipcRenderer.on('telemetry', (_evt, args) => { 
             editTelemetrySegments(throttleTelemetryPath, args.ThrottleRaw)
             editTelemetrySegments(brakeTelemetryPath, args.BrakeRaw)
+            updateSpeed(args.Speed)
         })
     }, [])
+
+    const updateSpeed = (speed) => {
+        debugger
+        speedRef.current.innerHTML = `${parseInt(speed * MPH_CONVERSION)}`
+    }
 
     const initTelemetryPath = (telemetryPath, strokeColor, fillColor) => {
         telemetryPath.strokeColor = strokeColor;
@@ -53,26 +61,31 @@ const GasBreak = () => {
             segment.point.x--
             return segment
         })
-        telemetryPath.removeSegment(1)        
-        telemetryPath.removeSegment(299)        
+        telemetryPath.removeSegment(1)      
+        telemetryPath.removeSegment(399)
 
-        telemetryPath.insert(298, new Point(301, 100 - (throttle*100)))
+        telemetryPath.insert(398, new Point(401, 55 - (throttle * 55)))
 
         // Always make sure our end point is the bottom so we will close along the bottom of the path 
-        telemetryPath.insert(299, new Point(301, 100))
+        telemetryPath.insert(399, new Point(402, 100))
         telemetryPath.closed = true;
         
     }
 
     return (
-        <>
-            <div className="canvas">
-                <canvas ref={throttleCanvasRef} height="100" width="300" />
+        <div style={{display: 'flex'}}>
+            <div style={{marginTop: '2px'}}>
+                <div className="canvas">
+                    <canvas ref={throttleCanvasRef} height="55" width="400" />
+                </div>
+                <div className="canvas" style={{transform: 'rotateX(180deg)'}}>
+                    <canvas ref={brakeCanvasRef} height="55" width="400" />
+                </div>
             </div>
-            <div className="canvas" style={{transform: 'rotateX(180deg)'}}>
-                <canvas ref={brakeCanvasRef} height="100" width="300" />
+            <div style={{ backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '0px 0px 15px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <p style={{fontSize: '1.5rem', color: 'rgba(34,227,217, 0.8)'}}><span ref={speedRef}>0</span> <br />MPH</p>
             </div>
-        </>
+        </div>
     )
 }
 

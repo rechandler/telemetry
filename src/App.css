@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  border-radius: 15px;
 }
 
 .App-logo {
@@ -42,5 +43,5 @@
 }
 
 .canvas {
-  height: 101px;
+  height: 56px;
 }
