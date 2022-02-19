@@ -38,15 +38,18 @@ const GasBreak = () => {
         })
     }, [])
 
+    // Speed will come through in meters/second
     const updateSpeed = (speed) => {
-        debugger
-        speedRef.current.innerHTML = `${parseInt(speed * MPH_CONVERSION)}`
+        const mph = speed * MPH_CONVERSION
+        const remainder = mpg - Math.floor(mph)
+
+        // Attempt to round appropriately for speed
+        speedRef.current.innerHTML = remainder > 0.5 ? Math.ceil(mph) : Math.floor(mph) 
     }
 
     const initTelemetryPath = (telemetryPath, strokeColor, fillColor) => {
         telemetryPath.strokeColor = strokeColor;
         telemetryPath.fillColor = fillColor
-        // telemetryPath.strokeWidth = 2
 
         for (let i = 0; i < SEGMENT_LENGTH; i++) {
             telemetryPath.add(new Point(i, 100))
