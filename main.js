@@ -1,4 +1,4 @@
-const { app, BrowserWindow, autoUpdater } = require('electron')
+const { app, BrowserWindow, autoUpdater, dialog } = require('electron')
 
 if (require('electron-squirrel-startup')) return;
 
@@ -75,7 +75,7 @@ const setupAutoUpdater = () => {
       message: process.platform === 'win32' ? releaseNotes : releaseName,
       detail: 'A new version has been downloaded. Restart the application to apply the updates.'
     }
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
       if (returnValue.response === 0) autoUpdater.quitAndInstall()
     })
   })
