@@ -12,7 +12,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "electron-squirrel-startup": "^1.0.0",
-    "node-irsdk": "github:rechandler/node-irsdk",
+    "node-irsdk": "gityarnhub:rechandler/node-irsdk",
     "paper": "^0.12.15",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -26,6 +26,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron-dev": "electron .",
+    "fix": "./node_modules/.bin/electron-rebuild.cmd",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "react-scripts build && electron-forge publish"

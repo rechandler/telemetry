@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Paper, {Point} from 'paper'
 
 const { ipcRenderer } = window.require('electron')
@@ -8,6 +8,8 @@ const SEGMENT_LENGTH = 400
 const MPH_CONVERSION = 2.237
 const GasBreak = () => {
 
+    const [isOnTrack, setIsOnTrack] = useState(false)
+    // const isOnTrackRef = useRef(null)
     const throttleCanvasRef = useRef(null)
     const brakeCanvasRef = useRef(null)
     const speedRef = useRef(null)
@@ -31,13 +33,20 @@ const GasBreak = () => {
         initTelemetryPath(brakeTelemetryPath, "rgba(225, 99, 71)", "rgba(225, 99, 71, 0.2)")
         brakeScope.view.draw()
 
-        ipcRenderer.on('telemetry', (_evt, args) => { 
+        ipcRenderer.on('telemetry', (_evt, args) => {
+            updateStatus(args.IsOnTrack)
             editTelemetrySegments(throttleTelemetryPath, args.ThrottleRaw)
             editTelemetrySegments(brakeTelemetryPath, args.BrakeRaw)
             updateSpeed(args.Speed)
             updateGear(args.Gear)
         })
     }, [])
+
+    const updateStatus = status => {
+        if (isOnTrack !== status) {
+            setIsOnTrack(status)
+        }
+    }
 
     const updateGear = (gear) => {
         if (gear === -1) return gearRef.current.innerHTML = 'R'
@@ -82,22 +91,31 @@ const GasBreak = () => {
     }
 
     return (
-        <div style={{display: 'flex'}}>
-            <div style={{ WebkitBorderTopLeftRadius: '25px', borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '4px 0px 8px -3px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span></p>
-            </div>
-            <div style={{marginTop: '2px'}}>
-                <div className="canvas">
-                    <canvas ref={throttleCanvasRef} height="55" width="400" />
+        <>
+            {/* <input style={{display: 'none'}} type="checkbox" ref={isOnTrackRef}/> */}
+            <div style={{display: `${isOnTrack ? 'flex' : 'none'}`}}>
+                <div style={{ WebkitBorderTopLeftRadius: '25px', borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '4px 0px 8px -3px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span></p>
                 </div>
-                <div className="canvas" style={{transform: 'rotateX(180deg)'}}>
-                    <canvas ref={brakeCanvasRef} height="55" width="400" />
+                <div style={{marginTop: '2px'}}>
+                    <div className="canvas">
+                        <canvas ref={throttleCanvasRef} height="55" width="400" />
+                    </div>
+                    <div className="canvas" style={{transform: 'rotateX(180deg)'}}>
+                        <canvas ref={brakeCanvasRef} height="55" width="400" />
+                    </div>
+                </div>
+                <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '-4px 0px 8px -3px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <p style={{fontSize: '1.5rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={speedRef}>0</span> <br />MPH</p>
                 </div>
             </div>
-            <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '-4px 0px 8px -3px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <p style={{fontSize: '1.5rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={speedRef}>0</span> <br />MPH</p>
+            <div style={{width: '60%', justifyContent: 'center', alignItems: 'center', display: `${isOnTrack ? 'none' : 'flex'}`}}>
+                <div style={{}}>
+                    <div className="lds-ripple"><div></div><div></div></div>
+                </div>
+                <p style={{fontSize: '1.3rem', flexGrow:1,}}>Waiting to get on the track</p>
             </div>
-        </div>
+        </>
     )
 }
 
