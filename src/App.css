@@ -87,7 +87,7 @@
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
   width: 40vw;
-  background-color: rgba(8, 8, 8, 0.808);
+  background-color: rgba(8, 8, 8);
   color: white;
   border-bottom: 2px solid rgb(38, 119, 58);
 }

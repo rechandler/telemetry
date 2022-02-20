@@ -16,21 +16,9 @@ const GasBreak = () => {
     
     // useEffect so the ref will be set
     useEffect(() => {
-        const throttleCanvas = throttleCanvasRef.current
-        const throttleScope = new Paper.PaperScope()
-        throttleScope.setup(throttleCanvas)
-        throttleScope.activate()
-        const throttleTelemetryPath = new throttleScope.Path();
-        initTelemetryPath(throttleTelemetryPath, "rgba(40, 173, 72)", "rgba(40, 173, 72, 0.2)")
-        throttleScope.view.draw()
         
-        const brakeCanvas = brakeCanvasRef.current
-        const brakeScope = new Paper.PaperScope()
-        brakeScope.setup(brakeCanvas)
-        brakeScope.activate()
-        const brakeTelemetryPath = new brakeScope.Path(); 
-        initTelemetryPath(brakeTelemetryPath, "rgba(225, 99, 71)", "rgba(225, 99, 71, 0.2)")
-        brakeScope.view.draw()
+        const throttleTelemetryPath = initializePath(throttleCanvasRef.current, "rgba(40, 173, 72)", "rgba(40, 173, 72, 0.2)")
+        const brakeTelemetryPath = initializePath(brakeCanvasRef.current, "rgba(225, 99, 71)", "rgba(225, 99, 71, 0.2)")
 
         ipcRenderer.on('telemetry', (_evt, args) => {
             updateStatus(args.IsOnTrack)
@@ -40,6 +28,16 @@ const GasBreak = () => {
             updateGear(args.Gear)
         })
     }, [])
+
+    const initializePath = (canvasCurrent, strokeColor, fillColor) => {
+        const newScope = new Paper.PaperScope()
+        newScope.setup(canvasCurrent)
+        newScope.activate()
+        const newPath = new newScope.Path();
+        initTelemetryPath(newPath, strokeColor, fillColor)
+        newPath.view.draw()
+        return newPath
+    }
 
     const updateStatus = status => {
         if (isOnTrack !== status) {

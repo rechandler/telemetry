@@ -1,5 +1,5 @@
 import './App.css';
-import GasBreak from './components/gasBrake/gasBreak.js'
+import Telemetry from './components/telemetry/telemetry.js'
 
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
       <div className="widget">Telemetry</div>
       <div className="App">
         <div className="App-body">
-          <GasBreak />
+          <Telemetry />
         </div>
       </div>
     </>
