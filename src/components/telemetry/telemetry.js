@@ -8,6 +8,7 @@ const SEGMENT_LENGTH = 400
 const MPH_CONVERSION = 2.237
 const GasBreak = () => {
 
+    let timer
     const [isOnTrack, setIsOnTrack] = useState(false)
     const throttleCanvasRef = useRef(null)
     const brakeCanvasRef = useRef(null)
@@ -21,7 +22,7 @@ const GasBreak = () => {
         const brakeTelemetryPath = initializePath(brakeCanvasRef.current, "rgba(225, 99, 71)", "rgba(225, 99, 71, 0.2)")
 
         ipcRenderer.on('telemetry', (_evt, args) => {
-            updateStatus(args.IsOnTrack)
+            debounceStatus(args.IsOnTrack)
             editTelemetrySegments(throttleTelemetryPath, args.ThrottleRaw)
             editTelemetrySegments(brakeTelemetryPath, args.BrakeRaw)
             updateSpeed(args.Speed)
@@ -39,10 +40,10 @@ const GasBreak = () => {
         return newPath
     }
 
-    const updateStatus = status => {
-        if (isOnTrack !== status) {
-            setIsOnTrack(status)
-        }
+    // output at 60fps means a half second debounce time is fine to use state in
+    const debounceStatus = status => {
+        clearTimeout(timer)
+        setTimeout(() => setIsOnTrack(status), 500)
     }
 
     const updateGear = (gear) => {
