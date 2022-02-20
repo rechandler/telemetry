@@ -1,7 +1,7 @@
 .App {
   text-align: center;
-  border-radius: 15px;
-  background-color: transparent;
+  border-radius: 0px 27px 27px 27px;
+  border:2px solid rgba(63, 63, 63, 0.822);
 }
 
 .App-logo {
@@ -16,8 +16,8 @@
 }
 
 .App-body {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: #282c34f3;
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,7 +28,7 @@
   -webkit-user-select: none;
   user-select: none;
   -webkit-app-region: drag;
-  border-radius: 25px;
+  border-radius: 0px 25px 25px 25px;
 }
 
 .App-link {
@@ -79,4 +79,15 @@
     height: 36px;
     opacity: 0;
   }
+}
+
+.widget {
+  display: flex;
+  justify-content: center;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+  width: 40vw;
+  background-color: rgba(8, 8, 8, 0.808);
+  color: white;
+  border-bottom: 2px solid rgb(38, 119, 58);
 }

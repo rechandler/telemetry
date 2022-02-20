@@ -9,7 +9,6 @@ const MPH_CONVERSION = 2.237
 const GasBreak = () => {
 
     const [isOnTrack, setIsOnTrack] = useState(false)
-    // const isOnTrackRef = useRef(null)
     const throttleCanvasRef = useRef(null)
     const brakeCanvasRef = useRef(null)
     const speedRef = useRef(null)
@@ -92,10 +91,9 @@ const GasBreak = () => {
 
     return (
         <>
-            {/* <input style={{display: 'none'}} type="checkbox" ref={isOnTrackRef}/> */}
             <div style={{display: `${isOnTrack ? 'flex' : 'none'}`}}>
-                <div style={{ WebkitBorderTopLeftRadius: '25px', borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '4px 0px 8px -3px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span></p>
+                <div style={{ borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><br /><span style={{fontSize: '1rem'}}>Gear</span></p>
                 </div>
                 <div style={{marginTop: '2px'}}>
                     <div className="canvas">
@@ -105,8 +103,8 @@ const GasBreak = () => {
                         <canvas ref={brakeCanvasRef} height="55" width="400" />
                     </div>
                 </div>
-                <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '-4px 0px 8px -3px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <p style={{fontSize: '1.5rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={speedRef}>0</span> <br />MPH</p>
+                <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '-4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={speedRef}>0</span> <br /><span style={{fontSize: '1rem'}}>MPH</span></p>
                 </div>
             </div>
             <div style={{width: '60%', justifyContent: 'center', alignItems: 'center', display: `${isOnTrack ? 'none' : 'flex'}`}}>

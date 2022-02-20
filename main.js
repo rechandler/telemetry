@@ -12,8 +12,8 @@ autoUpdater.setFeedURL({ url })
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 610,
-    height: 115,
+    width: 565,
+    height: 180,
     frame: false,
     transparent: true,
     webPreferences: {
