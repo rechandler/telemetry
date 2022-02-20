@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   border-radius: 15px;
+  background-color: transparent;
 }
 
 .App-logo {
@@ -27,6 +28,7 @@
   -webkit-user-select: none;
   user-select: none;
   -webkit-app-region: drag;
+  border-radius: 25px;
 }
 
 .App-link {

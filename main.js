@@ -4,7 +4,7 @@ if (require('electron-squirrel-startup')) return;
 
 const iracing = require('node-irsdk').getInstance()
 
-const UPDATE_CHECK_INTERVAL = 10 * 60 * 1000
+// const UPDATE_CHECK_INTERVAL = 10 * 60 * 1000
 const server = 'https://telemetry-lc9vbg16r-rechandler.vercel.app'
 const url = `${server}/update/${process.platform}/${app.getVersion()}`  
 autoUpdater.setFeedURL({ url })
@@ -12,7 +12,7 @@ autoUpdater.setFeedURL({ url })
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 505,
+    width: 610,
     height: 115,
     frame: false,
     transparent: true,
@@ -80,9 +80,9 @@ const setupAutoUpdater = () => {
     })
   })
 
-  setInterval(() => {
-    autoUpdater.checkForUpdates()
-  }, UPDATE_CHECK_INTERVAL)
+  // setInterval(() => {
+  //   autoUpdater.checkForUpdates()
+  // }, UPDATE_CHECK_INTERVAL)
   autoUpdater.checkForUpdates()
 }
 

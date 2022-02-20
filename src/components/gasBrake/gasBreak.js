@@ -1,7 +1,6 @@
 
 import { useEffect, useRef } from 'react'
 import Paper, {Point} from 'paper'
-import { Segment } from 'paper/dist/paper-core'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -12,6 +11,7 @@ const GasBreak = () => {
     const throttleCanvasRef = useRef(null)
     const brakeCanvasRef = useRef(null)
     const speedRef = useRef(null)
+    const gearRef = useRef(null)
     
     // useEffect so the ref will be set
     useEffect(() => {
@@ -35,13 +35,20 @@ const GasBreak = () => {
             editTelemetrySegments(throttleTelemetryPath, args.ThrottleRaw)
             editTelemetrySegments(brakeTelemetryPath, args.BrakeRaw)
             updateSpeed(args.Speed)
+            updateGear(args.Gear)
         })
     }, [])
+
+    const updateGear = (gear) => {
+        if (gear === -1) return gearRef.current.innerHTML = 'R'
+        if (gear === 0) return gearRef.current.innerHTML = 'N'
+        gearRef.current.innerHTML = gear
+    }
 
     // Speed will come through in meters/second
     const updateSpeed = (speed) => {
         const mph = speed * MPH_CONVERSION
-        const remainder = mpg - Math.floor(mph)
+        const remainder = mph - Math.floor(mph)
 
         // Attempt to round appropriately for speed
         speedRef.current.innerHTML = remainder > 0.5 ? Math.ceil(mph) : Math.floor(mph) 
@@ -72,11 +79,13 @@ const GasBreak = () => {
         // Always make sure our end point is the bottom so we will close along the bottom of the path 
         telemetryPath.insert(399, new Point(402, 100))
         telemetryPath.closed = true;
-        
     }
 
     return (
         <div style={{display: 'flex'}}>
+            <div style={{ WebkitBorderTopLeftRadius: '25px', borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '4px 0px 8px -3px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span></p>
+            </div>
             <div style={{marginTop: '2px'}}>
                 <div className="canvas">
                     <canvas ref={throttleCanvasRef} height="55" width="400" />
@@ -85,8 +94,8 @@ const GasBreak = () => {
                     <canvas ref={brakeCanvasRef} height="55" width="400" />
                 </div>
             </div>
-            <div style={{ backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '0px 0px 15px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-              <p style={{fontSize: '1.5rem', color: 'rgba(34,227,217, 0.8)'}}><span ref={speedRef}>0</span> <br />MPH</p>
+            <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 173, 72, 0.1)', boxShadow: '-4px 0px 8px -3px black', width: 105, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <p style={{fontSize: '1.5rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={speedRef}>0</span> <br />MPH</p>
             </div>
         </div>
     )
