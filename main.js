@@ -3,6 +3,9 @@ const { app, BrowserWindow, autoUpdater, dialog, ipcMain } = require('electron')
 if (require('electron-squirrel-startup')) return;
 
 const iracing = require('node-irsdk').getInstance()
+const state = {
+  telemetry: false
+}
 
 // const UPDATE_CHECK_INTERVAL = 10 * 60 * 1000
 const server = 'https://telemetry-lc9vbg16r-rechandler.vercel.app'
@@ -16,7 +19,8 @@ function createWindow () {
     frame: true,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      additionalArguments: ["MainMenu"]
     }
   })
 
@@ -26,7 +30,7 @@ function createWindow () {
     setupAutoUpdater()
   } else {
     // Local Development. Must start react-dev-server
-    win.loadURL('http://localhost:3000/menu');
+    win.loadURL('http://localhost:3000');
   }
 }
 
@@ -77,7 +81,9 @@ const setupAutoUpdater = () => {
 // code. You can also put them in separate files and require them here.
 
 ipcMain.on('telemetryLaunch', () => {
-  console.log('made it')
+
+  if (state.telemetry) return
+
   // Create the browser window.
   const telemetryWindow = new BrowserWindow({
     width: 565,
@@ -86,17 +92,17 @@ ipcMain.on('telemetryLaunch', () => {
     transparent: true,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      additionalArguments: ["Telemetry"]
     }
   })
 
   if(app.isPackaged) {
     // Production Mode
     telemetryWindow.loadFile(`${__dirname}/build/index.html`)
-    setupAutoUpdater()
   } else {
     // Local Development. Must start react-dev-server
-    telemetryWindow.loadURL('http://localhost:3000/widgets/telemetry');
+    telemetryWindow.loadURL('http://localhost:3000');
   }
 
   // Open the DevTools.
@@ -113,5 +119,8 @@ ipcMain.on('telemetryLaunch', () => {
   // Cancel the irsdk telemetry events
   telemetryWindow.on('closed', () => {
     _stop()
+    state.telemetry = false
   })
+
+  state.telemetry = true
 })

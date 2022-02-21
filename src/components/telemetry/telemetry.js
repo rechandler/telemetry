@@ -90,7 +90,7 @@ const GasBreak = () => {
 
     return (
         <>
-            <div className="widget">Telemetry</div>
+            <div className="draggable widget-title flex justify-center w-40 text-white bg-slate-900">Telemetry</div>
             <div className="Telemetry">
                 <div className="Telemetry-body">
                     <div style={{display: `${isOnTrack ? 'flex' : 'none'}`}}>

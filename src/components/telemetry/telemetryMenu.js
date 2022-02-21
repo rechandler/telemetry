@@ -3,10 +3,9 @@ import Telemetry from './telemetry'
 const { ipcRenderer } = window.require('electron')
 
 export default () => {
-    const launchTelemetryWidget = () => {
-        console.log('testing')
-       ipcRenderer.send('telemetryLaunch',' <Telemetry />')
-    }
+    
+    const launchTelemetryWidget = () => ipcRenderer.send('telemetryLaunch')
+
     return (
         <div className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
