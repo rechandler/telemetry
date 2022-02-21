@@ -90,27 +90,32 @@ const GasBreak = () => {
 
     return (
         <>
-            <div style={{display: `${isOnTrack ? 'flex' : 'none'}`}}>
-                <div style={{ borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><br /><span style={{fontSize: '1rem'}}>Gear</span></p>
-                </div>
-                <div style={{marginTop: '2px'}}>
-                    <div className="canvas">
-                        <canvas ref={throttleCanvasRef} height="55" width="400" />
+            <div className="widget">Telemetry</div>
+            <div className="Telemetry">
+                <div className="Telemetry-body">
+                    <div style={{display: `${isOnTrack ? 'flex' : 'none'}`}}>
+                        <div style={{ borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><br /><span style={{fontSize: '1rem'}}>Gear</span></p>
+                        </div>
+                        <div style={{marginTop: '2px'}}>
+                            <div className="canvas">
+                                <canvas ref={throttleCanvasRef} height="55" width="400" />
+                            </div>
+                            <div className="canvas" style={{transform: 'rotateX(180deg)'}}>
+                                <canvas ref={brakeCanvasRef} height="55" width="400" />
+                            </div>
+                        </div>
+                        <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '-4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={speedRef}>0</span> <br /><span style={{fontSize: '1rem'}}>MPH</span></p>
+                        </div>
                     </div>
-                    <div className="canvas" style={{transform: 'rotateX(180deg)'}}>
-                        <canvas ref={brakeCanvasRef} height="55" width="400" />
+                    <div style={{width: '60%', justifyContent: 'center', alignItems: 'center', display: `${isOnTrack ? 'none' : 'flex'}`}}>
+                        <div style={{}}>
+                            <div className="lds-ripple"><div></div><div></div></div>
+                        </div>
+                        <p style={{fontSize: '1.3rem', flexGrow:1,}}>Waiting to get on the track</p>
                     </div>
                 </div>
-                <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '-4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <p style={{fontSize: '2rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={speedRef}>0</span> <br /><span style={{fontSize: '1rem'}}>MPH</span></p>
-                </div>
-            </div>
-            <div style={{width: '60%', justifyContent: 'center', alignItems: 'center', display: `${isOnTrack ? 'none' : 'flex'}`}}>
-                <div style={{}}>
-                    <div className="lds-ripple"><div></div><div></div></div>
-                </div>
-                <p style={{fontSize: '1.3rem', flexGrow:1,}}>Waiting to get on the track</p>
             </div>
         </>
     )

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, autoUpdater, dialog } = require('electron')
+const { app, BrowserWindow, autoUpdater, dialog, ipcMain } = require('electron')
 
 if (require('electron-squirrel-startup')) return;
 
@@ -10,12 +10,10 @@ const url = `${server}/update/${process.platform}/${app.getVersion()}`
 autoUpdater.setFeedURL({ url })
 
 function createWindow () {
-  // Create the browser window.
   const win = new BrowserWindow({
-    width: 565,
-    height: 180,
-    frame: false,
-    transparent: true,
+    width: 800,
+    height: 800,
+    frame: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -28,19 +26,8 @@ function createWindow () {
     setupAutoUpdater()
   } else {
     // Local Development. Must start react-dev-server
-    win.loadURL('http://localhost:3000');
+    win.loadURL('http://localhost:3000/menu');
   }
-
-  // Open the DevTools.
-  // win.webContents.openDevTools()
-
-  // This should be all we need to do for now in our main process.
-  // Any future widgets that need telemetry data can just subscribe
-  iracing.on('Telemetry', evt => {
-    win.webContents.send('telemetry', evt.values)
-  })
-
-  win.setAlwaysOnTop(true, 'screen')
 }
 
 // This method will be called when Electron has finished
@@ -88,3 +75,43 @@ const setupAutoUpdater = () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.on('telemetryLaunch', () => {
+  console.log('made it')
+  // Create the browser window.
+  const telemetryWindow = new BrowserWindow({
+    width: 565,
+    height: 180,
+    frame: false,
+    transparent: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  })
+
+  if(app.isPackaged) {
+    // Production Mode
+    telemetryWindow.loadFile(`${__dirname}/build/index.html`)
+    setupAutoUpdater()
+  } else {
+    // Local Development. Must start react-dev-server
+    telemetryWindow.loadURL('http://localhost:3000/widgets/telemetry');
+  }
+
+  // Open the DevTools.
+  // win.webContents.openDevTools()
+
+  // This should be all we need to do for now in our main process.
+  // Any future widgets that need telemetry data can just subscribe
+  const { _stop } = iracing.on('Telemetry', evt => {
+    telemetryWindow.webContents.send('telemetry', evt.values)
+  })
+  
+  telemetryWindow.setAlwaysOnTop(true, 'screen')
+
+  // Cancel the irsdk telemetry events
+  telemetryWindow.on('closed', () => {
+    _stop()
+  })
+})
