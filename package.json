@@ -15,6 +15,7 @@
     "@testing-library/user-event": "^13.5.0",
     "autoprefixer": "^10.4.2",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.0.1",
     "node-irsdk": "github:rechandler/node-irsdk",
     "paper": "^0.12.15",
     "postcss": "^8.4.6",
