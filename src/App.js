@@ -8,7 +8,7 @@ import {
   FlagIcon,
   ChartBarIcon,
   FolderIcon,
-  HomeIcon,
+  LightBulbIcon,
   InboxIcon,
   MenuIcon,
   UsersIcon,
@@ -16,7 +16,7 @@ import {
 } from '@heroicons/react/outline'
 
 const navigation = [
-  { name: 'Home', href: '/', icon: HomeIcon, current: true },
+  { name: 'Dashboard', href: '/', icon: LightBulbIcon, current: true },
   { name: 'Telemetry', href: '/telemetry', icon: FlagIcon, current: false },
   // { name: 'Team', href: '#', icon: UsersIcon, current: false },
   // { name: 'Projects', href: '#', icon: FolderIcon, current: false },

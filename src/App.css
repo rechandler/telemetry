@@ -59,14 +59,8 @@
 }
 
 .widget-title {
-  /* -webkit-app-region: drag; */
-  /* display: flex; */
-  /* justify-content: center; */
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
-  /* width: 40vw; */
-  /* background-color: rgba(8, 8, 8); */
-  /* color: white; */
   border-bottom: 2px solid rgb(87, 194, 243);
 }
 

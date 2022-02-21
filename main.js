@@ -32,6 +32,10 @@ function createWindow () {
     // Local Development. Must start react-dev-server
     win.loadURL('http://localhost:3000');
   }
+
+  win.on('close', () => {
+    app.quit()
+  })
 }
 
 // This method will be called when Electron has finished
@@ -47,6 +51,7 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
 
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
