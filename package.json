@@ -1,6 +1,6 @@
 {
   "name": "telem_app",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "private": false,
   "main": "main.js",
   "homepage": "./",
