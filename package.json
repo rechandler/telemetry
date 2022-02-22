@@ -16,7 +16,7 @@
     "autoprefixer": "^10.4.2",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
-    "node-irsdk": "github:rechandler/node-irsdk",
+    "node-irsdk": "github:rechandler/node-irsdk#main",
     "paper": "^0.12.15",
     "postcss": "^8.4.6",
     "react": "^17.0.2",

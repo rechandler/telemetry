@@ -27,12 +27,18 @@ const schema = {
       "launchEnabled": {
         "type": "boolean",
         "description": "whether or not to launch the widget on startup"
+      },
+      "useMetric": {
+        "type": "boolean",
+        "description": "whether or not to use metric conversions rather than imperial"
       }
     }
   }
 }
 
 const store = new Store({schema})
+// ALways set to false incase of crash. They will repoen later if they are toggled
+store.set('telemetryWidget.displayed', false)
 
 const iracing = require('node-irsdk').getInstance()
 
@@ -123,6 +129,7 @@ ipcMain.on('telemetryLaunch', () => {
   launchTelemetry()
 })
 
+
 const updateWindowPosition = ({x, y}, windowName) => {
   store.set(`${windowName}.position.x`, x)
   store.set(`${windowName}.position.y`, y)
@@ -170,8 +177,8 @@ const launchTelemetry = () => {
 
   // This should be all we need to do for now in our main process.
   // Any future widgets that need telemetry data can just subscribe
-  const { _stop } = iracing.on('Telemetry', evt => {
-    telemetryWindow.webContents.send('telemetry', evt.values)
+  iracing.on('Telemetry', evt => {
+    if(!telemetryWindow.isDestroyed()) telemetryWindow.webContents.send('telemetry', evt.values)
   })
   
   telemetryWindow.setAlwaysOnTop(true, 'screen')
@@ -179,11 +186,14 @@ const launchTelemetry = () => {
   // Cancel the irsdk telemetry events
   telemetryWindow.on('closed', () => {
     store.set('telemetryWidget.displayed', false)
-    _stop()
   })
 
   telemetryWindow.on('move', () => {
     updateWindowPosition(telemetryWindow.getBounds(), 'telemetryWidget')
+  })
+
+  ipcMain.on('telemetryConversionSwitched', (_evt, usingMetric) => {
+    if(!telemetryWindow.isDestroyed()) telemetryWindow.webContents.send('telemetryConversionUpdate', usingMetric)
   })
 
   store.set('telemetryWidget.displayed', true)
