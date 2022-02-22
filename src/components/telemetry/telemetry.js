@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react'
-import { CogIcon } from '@heroicons/react/outline'
+import { ReactComponent as GearShift} from '../../img/gearshift.svg'
 import Paper, {Point} from 'paper'
 
 const Store = window.require('electron-store');
@@ -110,7 +110,7 @@ const GasBreak = () => {
                 <div className="Telemetry-body">
                     <div style={{display: `${isOnTrack ? 'flex' : 'none'}`}}>
                         <div style={{ borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><span style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><div className="h-7 w-7" ><img src="/gearshift.svg" /></div></span></p>
+                            <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><span style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><div className="h-10 w-5" ><GearShift /></div></span></p>
                         </div>
                         <div style={{marginTop: '2px'}}>
                             <div className="canvas">
@@ -121,7 +121,7 @@ const GasBreak = () => {
                             </div>
                         </div>
                         <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '-4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)', display: 'flex', flexDirection: 'column'}}><span ref={speedRef}>0</span><span style={{fontSize: '1rem'}}>{usingMetric ? 'KPH' : 'MPH'}</span></p>
+                            <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)', display: 'flex', flexDirection: 'column'}}><span ref={speedRef}>0</span><span style={{fontSize: '1rem'}} className="h-10">{usingMetric ? 'KPH' : 'MPH'}</span></p>
                         </div>
                     </div>
                     <div style={{width: '60%', justifyContent: 'center', alignItems: 'center', display: `${isOnTrack ? 'none' : 'flex'}`}}>
