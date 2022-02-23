@@ -1,6 +1,6 @@
-import './App.css';
-import TelemetryMenu from './components/telemetry/telemetryMenu'
-import Dashboard from './components/dashboard/dashboard.js'
+import TelemetryMenu from '../telemetry/telemetryMenu'
+import TireWearMenu from '../tireWear/tireWearMenu'
+import Dashboard from '../dashboard/dashboard.js'
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { HashRouter, NavLink, Route, Routes } from 'react-router-dom'
@@ -11,18 +11,14 @@ import {
   LightBulbIcon,
   InboxIcon,
   MenuIcon,
-  UsersIcon,
+  ViewGridIcon,
   XIcon,
 } from '@heroicons/react/outline'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LightBulbIcon, current: true },
   { name: 'Telemetry', href: '/telemetry', icon: FlagIcon, current: false },
-  // { name: 'Team', href: '#', icon: UsersIcon, current: false },
-  // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-  // { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-  // { name: 'Documents', href: '#', icon: InboxIcon, current: false },
-  // { name: 'Reports', href: '#', icon: ChartBarIcon, current: false },
+  { name: 'TireWear', href: '/tirewear', icon: ViewGridIcon, current: false}
 ]
 
 function classNames(...classes) {
@@ -217,6 +213,7 @@ function App() {
             <Routes>
               <Route exact path="/" element={<Dashboard />} />
               <Route exact path="/telemetry" element={<TelemetryMenu />} />
+              <Route exact path="/tirewear" element={<TireWearMenu />} />
             </Routes>
           </main>
         </div>

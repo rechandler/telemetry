@@ -1,0 +1,76 @@
+.Telemetry {
+    text-align: center;
+    border-radius: 0px 27px 27px 27px;
+    border:2px solid rgba(63, 63, 63, 0.822);
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.856);
+  }
+  
+  .Telemetry-body {
+    background-color: #282c34f3;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+  
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-app-region: drag;
+    border-radius: 0px 25px 25px 25px;
+  }
+
+  .waiting-body {
+    background-color: #282c34f3;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+  
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-app-region: drag;
+    border-radius: 0px 25px 25px 25px;
+  }
+  
+  .canvas {
+    height: 56px;
+  }
+  
+  .widget-title {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom: 2px solid rgb(87, 194, 243);
+  }
+  
+  .shim-blue {
+    overflow: hidden;
+    background-color: rgb(17, 119, 167)
+  }
+  .shim-blue::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgb(255, 255, 255) 0,
+      rgba(233, 233, 233, 0.9) 50%,
+      rgba(233, 233, 233, 0.8) 100%
+    );
+    animation: shimmer 3s ease-out infinite;
+    content: "";
+  }
+  
+  @keyframes shimmer {
+    100% {
+      transform: translateX(0%);
+      opacity: 0;
+    }
+  }

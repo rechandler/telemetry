@@ -1,13 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from './components/app/App';
 import Telemetry from './components/telemetry/telemetry'
+import TireWear from './components/tireWear/tireWear'
 import reportWebVitals from './reportWebVitals';
 
 const processes = [
   {'MainMenu': App},
-  {'Telemetry': Telemetry}
+  {'Telemetry': Telemetry},
+  {'TireWear': TireWear}
 ]
 
 const getProcessFromArgs = () => {

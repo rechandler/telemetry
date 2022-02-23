@@ -1,7 +1,9 @@
 
+import './telemetry.css'
 import { useState, useEffect, useRef } from 'react'
 import { ReactComponent as GearShift} from '../../img/gearshift.svg'
 import Paper, {Point} from 'paper'
+import widgetWrapper from '../widgetWrapper/widgetWrapper'
 
 const Store = window.require('electron-store');
 const { ipcRenderer } = window.require('electron')
@@ -11,7 +13,7 @@ const store = new Store()
 const SEGMENT_LENGTH = 400
 const KPH_CONVERSION = 3.6
 const MPH_CONVERSION = 2.237
-const GasBreak = () => {
+const Telemetry = () => {
 
     let timer
     const [isOnTrack, setIsOnTrack] = useState(false)
@@ -105,30 +107,27 @@ const GasBreak = () => {
 
     return (
         <>
-            <div className="draggable widget-title flex justify-center w-40 text-white bg-slate-900">Telemetry</div>
+            <div className="widget-title flex justify-center w-40 text-white bg-slate-900">Telemetry</div>
             <div className="Telemetry">
-                <div className="Telemetry-body">
-                    <div style={{display: `${isOnTrack ? 'flex' : 'none'}`}}>
-                        <div style={{ borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><span style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><div className="h-10 w-5" ><GearShift /></div></span></p>
+                <div className="Telemetry-body" style={{display: `${isOnTrack ? 'flex' : 'none'}`, flexDirection: 'row'}}>
+                    <div style={{ borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><span style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><span className="h-10 w-5" ><GearShift /></span></span></p>
+                    </div>
+                    <div style={{marginTop: '2px'}}>
+                        <div className="canvas">
+                            <canvas ref={throttleCanvasRef} height="55" width="400" />
                         </div>
-                        <div style={{marginTop: '2px'}}>
-                            <div className="canvas">
-                                <canvas ref={throttleCanvasRef} height="55" width="400" />
-                            </div>
-                            <div className="canvas" style={{transform: 'rotateX(180deg)'}}>
-                                <canvas ref={brakeCanvasRef} height="55" width="400" />
-                            </div>
-                        </div>
-                        <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '-4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)', display: 'flex', flexDirection: 'column'}}><span ref={speedRef}>0</span><span style={{fontSize: '1rem'}} className="h-10">{usingMetric ? 'KPH' : 'MPH'}</span></p>
+                        <div className="canvas" style={{transform: 'rotateX(180deg)'}}>
+                            <canvas ref={brakeCanvasRef} height="55" width="400" />
                         </div>
                     </div>
-                    <div style={{width: '60%', justifyContent: 'center', alignItems: 'center', display: `${isOnTrack ? 'none' : 'flex'}`}}>
-                        <div style={{}}>
-                            <div className="lds-ripple"><div></div><div></div></div>
-                        </div>
-                        <p style={{fontSize: '1.3rem', flexGrow:1,}}>Waiting to get on the track</p>
+                    <div style={{ borderTopRightRadius: '25px', borderBottomRightRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '-4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)', display: 'flex', flexDirection: 'column'}}><span ref={speedRef}>0</span><span style={{fontSize: '1rem'}} className="h-10">{usingMetric ? 'KPH' : 'MPH'}</span></p>
+                    </div>
+                </div>
+                <div className="waiting-body shim-blue relative" style={{display: `${isOnTrack ? 'none' : 'flex'}`}}>
+                    <div className="w-screen absolute top-0 flex" style={{zIndex: 1, height: '105px', backgroundColor: '#282c34', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+                        <p style={{fontSize: '1.3rem', justifyContent: 'center', alignItems: 'center'}}>Waiting to get on the track</p>
                     </div>
                 </div>
             </div>
@@ -136,4 +135,5 @@ const GasBreak = () => {
     )
 }
 
-export default GasBreak
+console.log(widgetWrapper(Telemetry))
+export default widgetWrapper(Telemetry)

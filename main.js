@@ -33,6 +33,31 @@ const schema = {
         "description": "whether or not to use metric conversions rather than imperial"
       }
     }
+  },
+  "tireWearWidget": {
+    "type": "object",
+    "description": "tirewear widget options",
+    "properties": {
+      "displayed": {
+        "type": "boolean",
+        "description": "whether or not the widget is currently on screen"
+      },
+      "position": {
+        "type": "object",
+        "properties": {
+          "x": { "type": "number"},
+          "y": { "type": "number"}
+        }
+      },
+      "positionEnabled": {
+        "type": "boolean",
+        "description": "whether or not to achnowledge the x, y cooredinates of the last move"
+      },
+      "launchEnabled": {
+        "type": "boolean",
+        "description": "whether or not to launch the widget on startup"
+      },
+    }
   }
 }
 
@@ -70,11 +95,16 @@ function createWindow () {
 
   win.on('close', () => {
     store.set('telemetryWidget.displayed', false)
+    store.set('tireWearWidget.displayed', false)
     app.quit()
   })
 
   if(store.get('telemetryWidget.launchEnabled')) {
     launchTelemetry()
+  }
+
+  if(store.get('tireWearWidget.launchEnabled')) {
+    launchTireWear()
   }
 }
 
@@ -127,6 +157,10 @@ const setupAutoUpdater = () => {
 
 ipcMain.on('telemetryLaunch', () => {
   launchTelemetry()
+})
+
+ipcMain.on('tireWearLaunch', () => {
+  launchTireWear()
 })
 
 
@@ -183,7 +217,6 @@ const launchTelemetry = () => {
   
   telemetryWindow.setAlwaysOnTop(true, 'screen')
 
-  // Cancel the irsdk telemetry events
   telemetryWindow.on('closed', () => {
     store.set('telemetryWidget.displayed', false)
   })
@@ -197,4 +230,59 @@ const launchTelemetry = () => {
   })
 
   store.set('telemetryWidget.displayed', true)
+}
+
+const launchTireWear = () => {
+  if (store.get('tireWearWidget.displayed')) return
+
+  
+  const tireWearStore = store.get('tireWearStore')
+
+  let browserOptions = {
+    width: 565,
+    height: 180,
+    frame: false,
+    transparent: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      additionalArguments: ["TireWear"]
+    }
+  }
+
+  if (tireWearStore && tireWearStore.position && tireWearStore.positionEnabled) {
+    const {x, y} = tireWearStore.position
+    browserOptions = {
+      ...browserOptions,
+      x,
+      y
+    }
+  }
+
+  // Create the browser window.
+  const tireWearWindow = new BrowserWindow(browserOptions)
+
+  if(app.isPackaged) {
+    // Production Mode
+    tireWearWindow.loadFile(`${__dirname}/build/index.html`)
+  } else {
+    // Local Development. Must start react-dev-server
+    tireWearWindow.loadURL('http://localhost:3000');
+  }
+  
+  iracing.on('Telemetry', evt => {
+    if(!tireWearWindow.isDestroyed()) tireWearWindow.webContents.send('telemetry', evt.values)
+  })
+  
+  tireWearWindow.setAlwaysOnTop(true, 'screen')
+  
+  tireWearWindow.on('closed', () => {
+    store.set('tireWearWidget.displayed', false)
+  })
+
+  tireWearWindow.on('move', () => {
+    updateWindowPosition(tireWearWindow.getBounds(), 'tireWearWidget')
+  })
+
+  store.set('tireWearWidget.displayed', true)
 }
