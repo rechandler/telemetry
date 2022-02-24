@@ -46,6 +46,14 @@
     border-top-left-radius: 15px;
     border-bottom: 2px solid rgb(87, 194, 243);
   }
+
+  .pit-limiter {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom: 2px solid rgb(243, 220, 87);
+    top: 30px;
+    opacity: 0;
+  }
   
   .shim-blue {
     overflow: hidden;
@@ -74,3 +82,50 @@
       opacity: 0;
     }
   }
+
+.hide {
+    animation: hide 100ms linear;
+    top: 30px;
+    opacity: 0;
+    z-index: -1;
+ }
+
+ .show {
+   animation: show 100ms linear;
+   top: 0px;
+   opacity: 1;
+   z-index:1;
+ }
+
+@keyframes hide {
+  0% {
+    top: 0px;
+    opacity: 1;
+    z-index: -1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 30px;
+    opacity: 0;
+    z-index: -1;
+  }
+}
+
+@keyframes show {
+  0% {
+    top: 30px;
+    opacity: 0;
+    z-index: -1
+  }
+  50% {
+    opacity: 0;
+    z-index: -1;
+  }
+  100% {
+    top: 0px;
+    opacity: 1;
+    z-index: 1;
+  }
+}

@@ -64,6 +64,7 @@ const schema = {
 const store = new Store({schema})
 // ALways set to false incase of crash. They will repoen later if they are toggled
 store.set('telemetryWidget.displayed', false)
+store.set('tireWearWidget.displayed', false)
 
 const iracing = require('node-irsdk').getInstance()
 

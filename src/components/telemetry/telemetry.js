@@ -22,6 +22,7 @@ const Telemetry = () => {
     const brakeCanvasRef = useRef(null)
     const speedRef = useRef(null)
     const gearRef = useRef(null)
+    const pitLimiterRef = useRef(null)
     
     // useEffect so the ref will be set
     useEffect(() => {
@@ -34,6 +35,7 @@ const Telemetry = () => {
             editTelemetrySegments(brakeTelemetryPath, args.BrakeRaw)
             updateSpeed(args.Speed)
             updateGear(args.Gear)
+            updatePitLimiter(args.EngineWarnings)
         })
 
         ipcRenderer.on('telemetryConversionUpdate', (_evt, usingMetric) => {
@@ -61,6 +63,22 @@ const Telemetry = () => {
         setTimeout(() => setIsOnTrack(status), 500)
     }
 
+    const updatePitLimiter = warnings => {
+        const limiterOn = warnings.includes('PitSpeedLimiter')
+        if (!limiterOn && pitLimiterRef.current.classList.contains('not-initialized')) return
+        pitLimiterRef.current.classList.remove('not-initialized')
+        // if (pitLimiter === '' && !limiterOn) return;
+        // if (pitLimiter === 'show' && limiterOn) return;
+        // if (pitLimiter === 'hide' && !limiterOn) return ;
+        if (limiterOn) {
+            pitLimiterRef.current.classList.add('show')
+            pitLimiterRef.current.classList.remove('hide') 
+        } else {
+            pitLimiterRef.current.classList.add('hide')
+            pitLimiterRef.current.classList.remove('show') 
+        }
+    }
+
     const updateGear = (gear) => {
         if (gear === -1) return gearRef.current.innerHTML = 'R'
         if (gear === 0) return gearRef.current.innerHTML = 'N'
@@ -72,8 +90,6 @@ const Telemetry = () => {
         const converter = getConversion()
         const converted_speed = speed * converter
         const remainder = converted_speed - Math.floor(converted_speed)
-
-        console.log(converted_speed)
         // Attempt to round appropriately for speed
         speedRef.current.innerHTML = remainder > 0.5 ? Math.ceil(converted_speed) : Math.floor(converted_speed) 
     }
@@ -107,7 +123,11 @@ const Telemetry = () => {
 
     return (
         <>
-            <div className="widget-title flex justify-center w-40 text-white bg-slate-900">Telemetry</div>
+            <div className="flex">
+                <div className="widget-title flex justify-center w-40 text-white bg-slate-900">Telemetry</div>
+                <div className="w-40" />
+                <div className='pit-limiter flex justify-center w-40 text-white bg-slate-900 relative not-initialized' ref={pitLimiterRef}>Pit Limiter<span className="animate-ping absolute inline-flex h-0.5 w-32 rounded-full bg-yellow-300 opacity-100 top-6"></span></div>
+            </div>
             <div className="Telemetry">
                 <div className="Telemetry-body" style={{display: `${isOnTrack ? 'flex' : 'none'}`, flexDirection: 'row'}}>
                     <div style={{ borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -135,5 +155,4 @@ const Telemetry = () => {
     )
 }
 
-console.log(widgetWrapper(Telemetry))
 export default widgetWrapper(Telemetry)

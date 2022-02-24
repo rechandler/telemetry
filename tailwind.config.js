@@ -3,7 +3,13 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        slideup: {
+          
+        }
+      }
+    },
   },
   plugins: [],
 }
