@@ -240,10 +240,10 @@ const launchTireWear = () => {
   const tireWearStore = store.get('tireWearStore')
 
   let browserOptions = {
-    width: 565,
-    height: 180,
+    width: 200,
+    height: 300,
     frame: false,
-    transparent: false,
+    transparent: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,

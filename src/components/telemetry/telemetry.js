@@ -65,11 +65,11 @@ const Telemetry = () => {
 
     const updatePitLimiter = warnings => {
         const limiterOn = warnings.includes('PitSpeedLimiter')
+
+        // Very hacky, but this prevents the slide animation on first render
         if (!limiterOn && pitLimiterRef.current.classList.contains('not-initialized')) return
         pitLimiterRef.current.classList.remove('not-initialized')
-        // if (pitLimiter === '' && !limiterOn) return;
-        // if (pitLimiter === 'show' && limiterOn) return;
-        // if (pitLimiter === 'hide' && !limiterOn) return ;
+
         if (limiterOn) {
             pitLimiterRef.current.classList.add('show')
             pitLimiterRef.current.classList.remove('hide') 
@@ -124,13 +124,11 @@ const Telemetry = () => {
     return (
         <>
             <div className="flex">
-                <div className="widget-title flex justify-center w-40 text-white bg-slate-900">Telemetry</div>
-                <div className="w-40" />
-                <div className='pit-limiter flex justify-center w-40 text-white bg-slate-900 relative not-initialized' ref={pitLimiterRef}>Pit Limiter<span className="animate-ping absolute inline-flex h-0.5 w-32 rounded-full bg-yellow-300 opacity-100 top-6"></span></div>
+                <div className="widget-title flex justify-center w-40 text-white bg-slate-900 relative">Telemetry</div>
             </div>
             <div className="Telemetry">
                 <div className="Telemetry-body" style={{display: `${isOnTrack ? 'flex' : 'none'}`, flexDirection: 'row'}}>
-                    <div style={{ borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <div style={{ borderTopLeftRadius: '25px', borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><span style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><span className="h-10 w-5" ><GearShift /></span></span></p>
                     </div>
                     <div style={{marginTop: '2px'}}>
@@ -150,6 +148,9 @@ const Telemetry = () => {
                         <p style={{fontSize: '1.3rem', justifyContent: 'center', alignItems: 'center'}}>Waiting to get on the track</p>
                     </div>
                 </div>
+            </div>
+            <div className="flex justify-center align-center">
+                <div className='pit-limiter flex justify-center w-40 text-white bg-slate-900 relative not-initialized' ref={pitLimiterRef}>Pit Limiter<span className="animate-ping absolute inline-flex h-0.5 w-full rounded-full bg-yellow-300 opacity-100 bottom-6"></span></div>
             </div>
         </>
     )
