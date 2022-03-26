@@ -1,5 +1,6 @@
 import TelemetryMenu from '../telemetry/telemetryMenu'
 import TireWearMenu from '../tireWear/tireWearMenu'
+import RelativePositionMenu from '../relativePosition/relativePositionMenu'
 import Dashboard from '../dashboard/dashboard.js'
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
@@ -18,7 +19,7 @@ import {
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LightBulbIcon, current: true },
   { name: 'Telemetry', href: '/telemetry', icon: FlagIcon, current: false },
-  { name: 'TireWear', href: '/tirewear', icon: ViewGridIcon, current: false}
+  { name: 'RelativePosition', href: '/relativePosition', icon: ViewGridIcon, current: false}
 ]
 
 function classNames(...classes) {
@@ -213,7 +214,7 @@ function App() {
             <Routes>
               <Route exact path="/" element={<Dashboard />} />
               <Route exact path="/telemetry" element={<TelemetryMenu />} />
-              <Route exact path="/tirewear" element={<TireWearMenu />} />
+              <Route exact path="/relativePosition" element={<RelativePositionMenu />} />
             </Routes>
           </main>
         </div>

@@ -13,11 +13,11 @@ const store = new Store()
 const SEGMENT_LENGTH = 400
 const KPH_CONVERSION = 3.6
 const MPH_CONVERSION = 2.237
-const Telemetry = () => {
+const TITLE = 'Telemetry'
+const Telemetry = ({ isOnTrack }) => {
 
-    let timer
-    const [isOnTrack, setIsOnTrack] = useState(false)
     const [usingMetric, setUsingMetric] = useState(store.get('telemetryWidget.useMetric'))
+
     const throttleCanvasRef = useRef(null)
     const brakeCanvasRef = useRef(null)
     const speedRef = useRef(null)
@@ -30,7 +30,6 @@ const Telemetry = () => {
         const brakeTelemetryPath = initializePath(brakeCanvasRef.current, "rgba(225, 99, 71)", "rgba(225, 99, 71, 0.2)")
 
         ipcRenderer.on('telemetry', (_evt, args) => {
-            debounceStatus(args.IsOnTrack)
             editTelemetrySegments(throttleTelemetryPath, args.ThrottleRaw)
             editTelemetrySegments(brakeTelemetryPath, args.BrakeRaw)
             updateSpeed(args.Speed)
@@ -57,13 +56,8 @@ const Telemetry = () => {
         return newPath
     }
 
-    // output at 60fps means a half second debounce time is fine to use state in
-    const debounceStatus = status => {
-        clearTimeout(timer)
-        setTimeout(() => setIsOnTrack(status), 500)
-    }
-
     const updatePitLimiter = warnings => {
+        if (!pitLimiterRef.current) return
         const limiterOn = warnings.includes('PitSpeedLimiter')
 
         // Very hacky, but this prevents the slide animation on first render
@@ -80,6 +74,7 @@ const Telemetry = () => {
     }
 
     const updateGear = (gear) => {
+        if (!gearRef.current) return
         if (gear === -1) return gearRef.current.innerHTML = 'R'
         if (gear === 0) return gearRef.current.innerHTML = 'N'
         gearRef.current.innerHTML = gear
@@ -87,6 +82,7 @@ const Telemetry = () => {
 
     // Speed will come through in meters/second
     const updateSpeed = (speed) => {
+        if (!speedRef.current) return
         const converter = getConversion()
         const converted_speed = speed * converter
         const remainder = converted_speed - Math.floor(converted_speed)
@@ -106,7 +102,6 @@ const Telemetry = () => {
     }
 
     const editTelemetrySegments = (telemetryPath, throttle) => {
-        
         telemetryPath.segments = telemetryPath.segments.map(segment => {
             segment.point.x--
             return segment
@@ -123,11 +118,8 @@ const Telemetry = () => {
 
     return (
         <>
-            <div className="flex">
-                <div className="widget-title flex justify-center w-40 text-white bg-slate-900 relative">Telemetry</div>
-            </div>
             <div className="Telemetry">
-                <div className="Telemetry-body" style={{display: `${isOnTrack ? 'flex' : 'none'}`, flexDirection: 'row'}}>
+                <div className="Telemetry-body" style={{flexDirection: 'row'}}>
                     <div style={{ borderTopLeftRadius: '25px', borderBottomLeftRadius: '25px', backgroundColor: 'rgba(40, 44, 60, 0.9)', boxShadow: '4px 0px 4px -3px rgba(0, 0, 0, .5)', width: 80, height: 115, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)'}}><span ref={gearRef}>N</span><span style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><span className="h-10 w-5" ><GearShift /></span></span></p>
                     </div>
@@ -143,11 +135,6 @@ const Telemetry = () => {
                         <p style={{fontSize: '3rem', color: 'rgba(255 ,255, 255, 0.8)', display: 'flex', flexDirection: 'column'}}><span ref={speedRef}>0</span><span style={{fontSize: '1rem'}} className="h-10">{usingMetric ? 'KPH' : 'MPH'}</span></p>
                     </div>
                 </div>
-                <div className="waiting-body shim-blue relative" style={{display: `${isOnTrack ? 'none' : 'flex'}`}}>
-                    <div className="w-screen absolute top-0 flex" style={{zIndex: 1, height: '105px', backgroundColor: '#282c34', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
-                        <p style={{fontSize: '1.3rem', justifyContent: 'center', alignItems: 'center'}}>Waiting to get on the track</p>
-                    </div>
-                </div>
             </div>
             <div className="flex justify-center align-center">
                 <div className='pit-limiter flex justify-center w-40 text-white bg-slate-900 relative not-initialized' ref={pitLimiterRef}>Pit Limiter<span className="animate-ping absolute inline-flex h-0.5 w-full rounded-full bg-yellow-300 opacity-100 bottom-6"></span></div>
@@ -156,4 +143,4 @@ const Telemetry = () => {
     )
 }
 
-export default widgetWrapper(Telemetry)
+export default widgetWrapper(Telemetry, TITLE)

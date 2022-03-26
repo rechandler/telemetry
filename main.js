@@ -58,15 +58,40 @@ const schema = {
         "description": "whether or not to launch the widget on startup"
       },
     }
+  },
+  "relativePositionWidget": {
+    "type": "object",
+    "description": "relativePosition widget options",
+    "properties": {
+      "displayed": {
+        "type": "boolean",
+        "description": "whether or not the widget is currently on screen"
+      },
+      "position": {
+        "type": "object",
+        "properties": {
+          "x": { "type": "number"},
+          "y": { "type": "number"}
+        }
+      },
+      "positionEnabled": {
+        "type": "boolean",
+        "description": "whether or not to achnowledge the x, y cooredinates of the last move"
+      },
+      "launchEnabled": {
+        "type": "boolean",
+        "description": "whether or not to launch the widget on startup"
+      },
+    }
   }
 }
 
 const store = new Store({schema})
 // ALways set to false incase of crash. They will repoen later if they are toggled
 store.set('telemetryWidget.displayed', false)
-store.set('tireWearWidget.displayed', false)
+store.set('relativePositionWidget.displayed', false)
 
-const iracing = require('node-irsdk').getInstance()
+const iracing = require('node-irsdk').init({sessionInfoUpdateInterval: 0})
 
 // const UPDATE_CHECK_INTERVAL = 10 * 60 * 1000
 const server = 'https://telemetry-lc9vbg16r-rechandler.vercel.app'
@@ -96,7 +121,7 @@ function createWindow () {
 
   win.on('close', () => {
     store.set('telemetryWidget.displayed', false)
-    store.set('tireWearWidget.displayed', false)
+    store.set('relativePositionWidget.displayed', false)
     app.quit()
   })
 
@@ -104,8 +129,8 @@ function createWindow () {
     launchTelemetry()
   }
 
-  if(store.get('tireWearWidget.launchEnabled')) {
-    launchTireWear()
+  if(store.get('relativePositionWidget.launchEnabled')) {
+    launchRelativePosition()
   }
 }
 
@@ -160,8 +185,8 @@ ipcMain.on('telemetryLaunch', () => {
   launchTelemetry()
 })
 
-ipcMain.on('tireWearLaunch', () => {
-  launchTireWear()
+ipcMain.on('relativePositionLaunch', () => {
+  launchRelativePosition()
 })
 
 
@@ -233,26 +258,25 @@ const launchTelemetry = () => {
   store.set('telemetryWidget.displayed', true)
 }
 
-const launchTireWear = () => {
-  if (store.get('tireWearWidget.displayed')) return
+const launchRelativePosition = () => {
+  if (store.get('relativePositionWidget.displayed')) return
 
-  
-  const tireWearStore = store.get('tireWearStore')
+  const relativePositionStore = store.get('relativePositionWidget')
 
   let browserOptions = {
-    width: 200,
-    height: 300,
+    width: 600,
+    height: 500,
     frame: false,
     transparent: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      additionalArguments: ["TireWear"]
+      additionalArguments: ["RelativePosition"]
     }
   }
 
-  if (tireWearStore && tireWearStore.position && tireWearStore.positionEnabled) {
-    const {x, y} = tireWearStore.position
+  if (relativePositionStore && relativePositionStore.position && relativePositionStore.positionEnabled) {
+    const {x, y} = relativePositionStore.position
     browserOptions = {
       ...browserOptions,
       x,
@@ -261,29 +285,33 @@ const launchTireWear = () => {
   }
 
   // Create the browser window.
-  const tireWearWindow = new BrowserWindow(browserOptions)
+  const relativePositionWindow = new BrowserWindow(browserOptions)
 
   if(app.isPackaged) {
     // Production Mode
-    tireWearWindow.loadFile(`${__dirname}/build/index.html`)
+    relativePositionWindow.loadFile(`${__dirname}/build/index.html`)
   } else {
     // Local Development. Must start react-dev-server
-    tireWearWindow.loadURL('http://localhost:3000');
+    relativePositionWindow.loadURL('http://localhost:3000');
   }
   
   iracing.on('Telemetry', evt => {
-    if(!tireWearWindow.isDestroyed()) tireWearWindow.webContents.send('telemetry', evt.values)
+    if(!relativePositionWindow.isDestroyed()) relativePositionWindow.webContents.send('telemetry', evt.values)
   })
   
-  tireWearWindow.setAlwaysOnTop(true, 'screen')
+  iracing.on('SessionInfo', evt => {
+    if(!relativePositionWindow.isDestroyed()) relativePositionWindow.webContents.send('sessionInfo', evt)
+  })
+
+  relativePositionWindow.setAlwaysOnTop(true, 'screen')
   
-  tireWearWindow.on('closed', () => {
-    store.set('tireWearWidget.displayed', false)
+  relativePositionWindow.on('closed', () => {
+    store.set('relativePositionWidget.displayed', false)
   })
 
-  tireWearWindow.on('move', () => {
-    updateWindowPosition(tireWearWindow.getBounds(), 'tireWearWidget')
+  relativePositionWindow.on('move', () => {
+    updateWindowPosition(relativePositionWindow.getBounds(), 'relativePositionWidget')
   })
 
-  store.set('tireWearWidget.displayed', true)
+  store.set('relativePositionWidget.displayed', true)
 }

@@ -4,12 +4,14 @@ import './index.css';
 import App from './components/app/App';
 import Telemetry from './components/telemetry/telemetry'
 import TireWear from './components/tireWear/tireWear'
+import RelativePosition from './components/relativePosition/relativePosition'
 import reportWebVitals from './reportWebVitals';
 
 const processes = [
   {'MainMenu': App},
   {'Telemetry': Telemetry},
-  {'TireWear': TireWear}
+  {'TireWear': TireWear},
+  {'RelativePosition': RelativePosition}
 ]
 
 const getProcessFromArgs = () => {
