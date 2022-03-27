@@ -12,7 +12,7 @@ const RelativePosition = () => {
     const [currentSessionNumber, setSessionNum] = useState(0)
     const [driverLaps, setDriverLaps] = useState(0)
     const [lastLap, setLastLap] = useState(null)
-    const [initialized, setInitialized] = useState(null)
+    const [initialized, setInitialized] = useState(false)
 
     useEffect(() => {
         ipcRenderer.on('sessionInfo', (_evt, { data: { DriverInfo, SessionInfo } }) => {
@@ -24,41 +24,24 @@ const RelativePosition = () => {
     }, [])
 
     useEffect(() => {
-        const throttleFunction = (func, delay) => {
-            // Previously called time of the function
-            let prev = 0;
-            return (...args) => {
-                // Current called time of the function
-                let now = new Date().getTime();
-
-                // If difference is greater than delay call
-                // the function again.
-                if (now - prev > delay) {
-                    prev = now;
-
-                    // "..." is the spread operator here
-                    // returning the function with the
-                    // array of arguments
-                    return func(...args);
-                }
-            }
-        }
-        if (drivers && driverInfo && paceCarIdx && !initialized) {
+        if (drivers && driverInfo && paceCarIdx !== null && !initialized) {
             setInitialized(true)
-            ipcRenderer.on('telemetry', throttleFunction((_evt, { SessionNum, SessionFlags, CarIdxLapCompleted, CarIdxLapDistPct, CarIdxPosition, CarIdxEstTime, PlayerCarIdx, CarIdxOnPitRoad, LapLastLapTime }) => {
+            ipcRenderer.on('telemetry', (_evt, { SessionNum, SessionFlags, CarIdxLapCompleted, CarIdxLapDistPct, CarIdxPosition, CarIdxEstTime, PlayerCarIdx, CarIdxOnPitRoad, LapLastLapTime }) => {
+                console.log(SessionNum)
                 if (drivers && driverInfo) {
                     const paceCarOut = SessionFlags.includes('CautionWaving') || SessionFlags.includes('Caution')
-                    updatePositions(CarIdxLapDistPct, PlayerCarIdx, CarIdxEstTime, CarIdxPosition, CarIdxOnPitRoad, CarIdxLapCompleted, paceCarOut)
+                    updatePositions(CarIdxLapDistPct, PlayerCarIdx, CarIdxEstTime, CarIdxPosition, CarIdxOnPitRoad, CarIdxLapCompleted, paceCarOut, SessionNum)
                     if (SessionNum != currentSessionNumber) setSessionNum(SessionNum);
                     if (LapLastLapTime != lastLap) setLastLap(LapLastLapTime)
                 }
-            }, 100))
+            })
         }
         
-    }, [drivers, driverInfo, paceCarIdx])
+    }, [drivers, driverInfo, paceCarIdx, currentSessionNumber])
 
-    const updatePositions = (carIdxLapDistPct, playerCarIdx, carIdxEstTime, carIdxPosition, carIdxOnPitRoad, carIdxLapCompleted, paceCarOut) => {
-        let sorted = carIdxLapDistPct
+    const updatePositions = (carIdxLapDistPct, playerCarIdx, carIdxEstTime, carIdxPosition, carIdxOnPitRoad, carIdxLapCompleted, paceCarOut, sessionNum) => {
+        try {
+            let sorted = carIdxLapDistPct
             .map((pct, idx) => ({ idx, pct }))
             .sort((a, b) => a.pct < b.pct ? 1 : -1)
             .filter((driver) => {
@@ -66,98 +49,105 @@ const RelativePosition = () => {
                 return driver.pct > -1
             })
 
-        const driverIndex = sorted.findIndex((driver) => driver.idx === playerCarIdx)
-        const sessionDriver = sorted[driverIndex]
+            const driverIndex = sorted.findIndex((driver) => driver.idx === playerCarIdx)
+            const sessionDriver = sorted[driverIndex]
 
-        sessionDriver.position = carIdxPosition[playerCarIdx]
-        sessionDriver.onPitRoad = carIdxOnPitRoad[playerCarIdx]
-        sessionDriver.lapsCompleted = carIdxLapCompleted[playerCarIdx]
-        sessionDriver.lapDelta = 0
-        const driverEstimateLap = carIdxEstTime[playerCarIdx]
-        if (sessionDriver.lapsCompleted !== driverLaps) setDriverLaps(sessionDriver.lapsCompleted)
+            sessionDriver.position = carIdxPosition[playerCarIdx]
+            sessionDriver.onPitRoad = carIdxOnPitRoad[playerCarIdx]
+            sessionDriver.lapsCompleted = carIdxLapCompleted[playerCarIdx]
+            sessionDriver.lapDelta = 0
+            const driverEstimateLap = carIdxEstTime[playerCarIdx]
+            if (sessionDriver.lapsCompleted !== driverLaps) setDriverLaps(sessionDriver.lapsCompleted)
 
-        const carsAhead = []
-        for (let i = 1; i < 4; i++) {
-            const oppIndex = ((driverIndex - i) % sorted.length + sorted.length) % sorted.length
-            const driverAhead = sorted[oppIndex]
-            if (!driverAhead || driverAhead.placed) break;
-            if (
-                (driverAhead.pct > sessionDriver.pct && driverAhead.pct - sessionDriver.pct < .5) ||
-                (driverAhead.pct < sessionDriver.pct && sessionDriver.pct - driverAhead.pct > .5)
-            ) {
-                driverAhead.placed = true
-                driverAhead.delta = getDeltaAhead(carIdxEstTime[driverAhead.idx], driverEstimateLap, oppIndex !== driverIndex - i)
-                driverAhead.position = carIdxPosition[driverAhead.idx]
-                driverAhead.onPitRoad = carIdxOnPitRoad[driverAhead.idx]
-                driverAhead.lapsCompleted = carIdxLapCompleted[driverAhead.idx]
-                driverAhead.lapDelta = getLapDelta(driverAhead.lapsCompleted, sessionDriver.lapsCompleted)
-                carsAhead.unshift(driverAhead)
+            console.log(sessionDriver)
+            const carsAhead = []
+            for (let i = 1; i < 4; i++) {
+                const oppIndex = ((driverIndex - i) % sorted.length + sorted.length) % sorted.length
+                const driverAhead = sorted[oppIndex]
+                if (!driverAhead || driverAhead.placed) break;
+                if (
+                    (driverAhead.pct > sessionDriver.pct && driverAhead.pct - sessionDriver.pct < .5) ||
+                    (driverAhead.pct < sessionDriver.pct && sessionDriver.pct - driverAhead.pct > .5)
+                ) {
+                    driverAhead.placed = true
+                    driverAhead.delta = getDeltaAhead(carIdxEstTime[driverAhead.idx], driverEstimateLap, oppIndex !== driverIndex - i)
+                    driverAhead.position = carIdxPosition[driverAhead.idx]
+                    driverAhead.onPitRoad = carIdxOnPitRoad[driverAhead.idx]
+                    driverAhead.lapsCompleted = carIdxLapCompleted[driverAhead.idx]
+                    driverAhead.lapDelta = getLapDelta(driverAhead.lapsCompleted, sessionDriver.lapsCompleted)
+                    carsAhead.unshift(driverAhead)
+                }
             }
-        }
 
-        if (carsAhead.length < 3) {
-            do {
-                carsAhead.unshift(null)
-            } while (carsAhead.length < 3)
-        }
-
-        const carsBehind = []
-        let paceCarWrap
-        for (let i = 1; i < 4; i++) {
-            const oppIndex = ((driverIndex + i) % sorted.length + sorted.length) % sorted.length
-            const driverBehind = sorted[oppIndex]
-            if (!driverBehind || driverBehind.placed) break;
-            if (
-                (driverBehind.pct < sessionDriver.pct && sessionDriver.pct - driverBehind.pct < .5) ||
-                (driverBehind.pct > sessionDriver.pct && driverBehind.pct - sessionDriver.pct > .5)
-            ) {
-                driverBehind.placed = true
-                driverBehind.delta = getDeltaBehind(carIdxEstTime[driverBehind.idx], driverEstimateLap, oppIndex !== driverIndex + i)
-                driverBehind.position = carIdxPosition[driverBehind.idx]
-                driverBehind.onPitRoad = carIdxOnPitRoad[driverBehind.idx]
-                driverBehind.lapsCompleted = carIdxLapCompleted[driverBehind.idx]
-                driverBehind.lapDelta = getLapDelta(driverBehind.lapsCompleted, sessionDriver.lapsCompleted)
-                carsBehind.push(driverBehind)
+            if (carsAhead.length < 3) {
+                do {
+                    carsAhead.unshift(null)
+                } while (carsAhead.length < 3)
             }
-        }
 
-        if (carsBehind.length < 3) {
-            do {
-                carsBehind.push(null)
-            } while (carsBehind.length < 3)
-        }
+            const carsBehind = []
+            let paceCarWrap
+            for (let i = 1; i < 4; i++) {
+                const oppIndex = ((driverIndex + i) % sorted.length + sorted.length) % sorted.length
+                const driverBehind = sorted[oppIndex]
+                if (!driverBehind || driverBehind.placed) break;
+                if (
+                    (driverBehind.pct < sessionDriver.pct && sessionDriver.pct - driverBehind.pct < .5) ||
+                    (driverBehind.pct > sessionDriver.pct && driverBehind.pct - sessionDriver.pct > .5)
+                ) {
+                    driverBehind.placed = true
+                    driverBehind.delta = getDeltaBehind(carIdxEstTime[driverBehind.idx], driverEstimateLap, oppIndex !== driverIndex + i)
+                    driverBehind.position = carIdxPosition[driverBehind.idx]
+                    driverBehind.onPitRoad = carIdxOnPitRoad[driverBehind.idx]
+                    driverBehind.lapsCompleted = carIdxLapCompleted[driverBehind.idx]
+                    driverBehind.lapDelta = getLapDelta(driverBehind.lapsCompleted, sessionDriver.lapsCompleted)
+                    carsBehind.push(driverBehind)
+                }
+            }
 
-        const result = [...carsAhead, sessionDriver, ...carsBehind].map((driver, mapIdx) => {
-            if (!driver) {
+            if (carsBehind.length < 3) {
+                do {
+                    carsBehind.push(null)
+                } while (carsBehind.length < 3)
+            }
+
+            const result = [...carsAhead, sessionDriver, ...carsBehind].map((driver, mapIdx) => {
+                if (!driver) {
+                    return (
+                        <tr key={mapIdx} style={{ color: 'rgba(255 ,255, 255, 0.8)' }}>
+                            <td>&nbsp;</td>
+                        </tr>
+                    )
+                }
+                console.log(sessionInfo)
+                const isRace = sessionInfo.Sessions[sessionNum].SessionType === 'Race'
+                console.log(isRace)
+
                 return (
-                    <tr key={mapIdx} style={{ color: 'rgba(255 ,255, 255, 0.8)' }}>
-                        <td>&nbsp;</td>
+                    <tr key={mapIdx} style={{ color: 'rgba(255 ,255, 255, 0.8)' }} className={getRowClasses(driver, isRace, mapIdx, sessionDriver)}>
+                        <td>
+                            {driverIsPaceCar(driver) ? '--' : driver.position || '-'}
+                        </td>
+                        <td>
+                            {driverIsPaceCar(driver) ? '--' : `#${drivers[driver.idx].CarNumber}`}
+                        </td>
+                        <td>
+                            {drivers[driver.idx].UserName}
+                        </td>
+                        {!driverIsPaceCar(driver) && <td>
+                            {parseFloat(driver.delta ? driver.delta - 1 : 0.0).toFixed(1)}
+                        </td>}
+                        {driverIsPaceCar(driver) && <td>
+                            {paceCarWrap ? '--' : parseFloat(driver.delta ? driver.delta - 1 : 0.0).toFixed(1)}
+                        </td>}
                     </tr>
                 )
-            }
-            const isRace = sessionInfo.Sessions[currentSessionNumber].SessionType === 'Race'
-            return (
-                <tr key={mapIdx} style={{ color: 'rgba(255 ,255, 255, 0.8)' }} className={getRowClasses(driver, isRace, mapIdx, sessionDriver)}>
-                    <td>
-                        {driverIsPaceCar(driver) ? '--' : driver.position || '-'}
-                    </td>
-                    <td>
-                        {driverIsPaceCar(driver) ? '--' : `#${drivers[driver.idx].CarNumber}`}
-                    </td>
-                    <td>
-                        {drivers[driver.idx].UserName}
-                    </td>
-                    {!driverIsPaceCar(driver) && <td>
-                        {parseFloat(driver.delta ? driver.delta - 1 : 0.0).toFixed(1)}
-                    </td>}
-                    {driverIsPaceCar(driver) && <td>
-                        {paceCarWrap ? '--' : parseFloat(driver.delta ? driver.delta - 1 : 0.0).toFixed(1)}
-                    </td>}
-                </tr>
-            )
-        })
+            })
 
-        wrapperRef.current.innerHTML = renderToString(result)
+            if(result) wrapperRef.current.innerHTML = renderToString(result)
+        } catch(error) {
+            console.log(error)
+        }
     }
 
     const driverIsPaceCar = (driver) => {
@@ -263,6 +253,7 @@ const RelativePosition = () => {
     }
 
     const isRace = sessionInfo.Sessions[currentSessionNumber].SessionType === 'Race'
+    console.log(isRace, 'israce')
     return (
         <>
             <div className="widget-body h-auto w-full flex flex-col pt-2 bg-e3 shadow-md shadow-black">
