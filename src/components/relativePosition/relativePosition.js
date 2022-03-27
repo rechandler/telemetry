@@ -112,16 +112,15 @@ const RelativePosition = () => {
             }
 
             const result = [...carsAhead, sessionDriver, ...carsBehind].map((driver, mapIdx) => {
-                if (!driver) {
+                if (!driver || !drivers) {
                     return (
                         <tr key={mapIdx} style={{ color: 'rgba(255 ,255, 255, 0.8)' }}>
                             <td>&nbsp;</td>
                         </tr>
                     )
                 }
-                console.log(sessionInfo)
+                
                 const isRace = sessionInfo.Sessions[sessionNum].SessionType === 'Race'
-                console.log(isRace)
 
                 return (
                     <tr key={mapIdx} style={{ color: 'rgba(255 ,255, 255, 0.8)' }} className={getRowClasses(driver, isRace, mapIdx, sessionDriver)}>
@@ -129,7 +128,7 @@ const RelativePosition = () => {
                             {driverIsPaceCar(driver) ? '--' : driver.position || '-'}
                         </td>
                         <td>
-                            {driverIsPaceCar(driver) ? '--' : `#${drivers[driver.idx].CarNumber}`}
+                            {driverIsPaceCar(driver) || !drivers[driver.idx] ? '--' : `#${drivers[driver.idx].CarNumber}`}
                         </td>
                         <td>
                             {drivers[driver.idx].UserName}
