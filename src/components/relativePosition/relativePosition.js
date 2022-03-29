@@ -123,7 +123,7 @@ const RelativePosition = () => {
                 const isRace = sessionInfo.Sessions[sessionNum].SessionType === 'Race'
 
                 return (
-                    <tr key={mapIdx} style={{ color: 'rgba(255 ,255, 255, 0.8)' }} className={getRowClasses(driver, isRace, mapIdx, sessionDriver)}>
+                    <tr key={mapIdx} style={{ color: 'rgba(255 ,255, 255, 0.8)' }} className={`${getRowClasses(driver, isRace, mapIdx, sessionDriver)} ${mapIdx === 3 ? 'bg-emerald-800': ''} `}>
                         <td>
                             {driverIsPaceCar(driver) ? '--' : driver.position || '-'}
                         </td>
@@ -143,7 +143,7 @@ const RelativePosition = () => {
                 )
             })
 
-            if(result) wrapperRef.current.innerHTML = renderToString(result)
+    if(result && wrapperRef.current) wrapperRef.current.innerHTML = renderToString(result)
         } catch(error) {
             console.log(error)
         }
@@ -251,6 +251,15 @@ const RelativePosition = () => {
         }
     }
 
+    const formatLapTime = lapInSeconds => {
+        const date = new Date(null)
+        date.setSeconds(lapInSeconds)
+        const result = date.toISOString().slice(14, -5)
+        const decimal = lapInSeconds.toString().split('.')[1]
+        return `${result}:${decimal}`
+
+    }
+
     const isRace = sessionInfo.Sessions[currentSessionNumber].SessionType === 'Race'
     console.log(isRace, 'israce')
     return (
@@ -262,9 +271,9 @@ const RelativePosition = () => {
                     </tbody>
                 </table>
                 <div style={{ color: 'rgba(255 ,255, 255, 0.8)' }} className="pl-12 flex w-full" >
-                    {isRace && <span className='flex-shrink'>Laps: {driverLaps ? driverLaps : '--'}/{sessionInfo.Sessions[currentSessionNumber].SessionLaps}</span>}
-                    {!isRace && <span className='flex-shrink'>Laps: {driverLaps ? driverLaps : '--'}</span>}
-                    <span className="flex-grow ">Last Lap: {lastLap && lastLap > 0 ? lastLap.toFixed(3) : '--'}</span>
+                    {isRace && <span className='flex-shrink'>Laps: {driverLaps !== null ? (driverLaps + 1) : '--'}/{sessionInfo.Sessions[currentSessionNumber].SessionLaps}</span>}
+                    {!isRace && <span className='flex-shrink'>Laps: {driverLaps !== null ? (driverLaps + 1) : '--'}</span>}
+                    <span className="flex-grow ">Last Lap: {lastLap && lastLap > 0 ? formatLapTime(lastLap.toFixed(3)) : '--'}</span>
                 </div>
             </div>
         </>
