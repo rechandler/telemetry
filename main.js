@@ -1,5 +1,6 @@
 const { app, BrowserWindow, autoUpdater, dialog, ipcMain } = require('electron')
 const Store = require('electron-store')
+const withSpeed = require('./withSpeed.js')
 
 
 if (require('electron-squirrel-startup')) return;
@@ -189,7 +190,6 @@ ipcMain.on('relativePositionLaunch', () => {
   launchRelativePosition()
 })
 
-
 const updateWindowPosition = ({x, y}, windowName) => {
   store.set(`${windowName}.position.x`, x)
   store.set(`${windowName}.position.y`, y)
@@ -294,12 +294,15 @@ const launchRelativePosition = () => {
     // Local Development. Must start react-dev-server
     relativePositionWindow.loadURL('http://localhost:3000');
   }
+
+  const withSpeedWrapper = new withSpeed()
   
   iracing.on('Telemetry', evt => {
-    if(!relativePositionWindow.isDestroyed()) relativePositionWindow.webContents.send('telemetry', evt.values)
+    if(!relativePositionWindow.isDestroyed()) relativePositionWindow.webContents.send('telemetry', withSpeedWrapper.withSpeed(evt.values))
   })
   
   iracing.on('SessionInfo', evt => {
+    withSpeedWrapper.setTrackLength(evt.data.WeekendInfo.TrackLength)
     if(!relativePositionWindow.isDestroyed()) relativePositionWindow.webContents.send('sessionInfo', evt)
   })
 
@@ -314,4 +317,9 @@ const launchRelativePosition = () => {
   })
 
   store.set('relativePositionWidget.displayed', true)
+
+  ipcMain.on('initSessionInfo', () => {
+    if(!relativePositionWindow.isDestroyed()) relativePositionWindow.webContents.send('sessionInfo', iracing.sessionInfo)
+  })
+  
 }
