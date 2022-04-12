@@ -27,22 +27,22 @@ const RelativePosition = () => {
     }, [])
 
     useEffect(() => {
-        if (drivers && driverInfo && paceCarIdx !== null && !initialized && isMultiClass !== null) {
+        if (drivers && driverInfo && paceCarIdx !== null && !initialized && isMultiClass !== null && sessionInfo) {
             setInitialized(true)
             ipcRenderer.on('telemetry', (_evt, data) => {
                 if (drivers && driverInfo) {
                     const { SessionTime, SessionNum, SessionFlags, CarIdxLapCompleted, CarIdxLapDistPct, CarIdxClassPosition, CarIdxPosition, CarIdxEstTime, PlayerCarIdx, CarIdxOnPitRoad, LapLastLapTime, SessionTimeRemain, SpeedByCarIdx, LengthOfTrack} = data
                     const paceCarOut = SessionFlags.includes('CautionWaving') || SessionFlags.includes('Caution')
-                    updatePositions(SessionTime, CarIdxLapDistPct, PlayerCarIdx, CarIdxEstTime ,CarIdxClassPosition, CarIdxPosition, CarIdxOnPitRoad, CarIdxLapCompleted, paceCarOut, SessionNum, isMultiClass, SpeedByCarIdx, LengthOfTrack)
+                    updatePositions(sessionInfo, SessionTime, CarIdxLapDistPct, PlayerCarIdx, CarIdxEstTime ,CarIdxClassPosition, CarIdxPosition, CarIdxOnPitRoad, CarIdxLapCompleted, paceCarOut, SessionNum, isMultiClass, SpeedByCarIdx, LengthOfTrack)
                     if (SessionNum != currentSessionNumber) setSessionNum(SessionNum);
                     if (LapLastLapTime != lastLap) setLastLap(LapLastLapTime)
                 }
             })
         }
         
-    }, [drivers, driverInfo, paceCarIdx, currentSessionNumber, isMultiClass])
+    }, [drivers, driverInfo, paceCarIdx, currentSessionNumber, isMultiClass, sessionInfo])
 
-    const updatePositions = (sessionTime, carIdxLapDistPct, playerCarIdx, carIdxEstTime, carIdxClassPosition, carIdxPosition, carIdxOnPitRoad, carIdxLapCompleted, paceCarOut, sessionNum, sessionIsMultiClass, speedByCarIdx, lengthOfTrack) => {
+    const updatePositions = (sessionInfo, sessionTime, carIdxLapDistPct, playerCarIdx, carIdxEstTime, carIdxClassPosition, carIdxPosition, carIdxOnPitRoad, carIdxLapCompleted, paceCarOut, sessionNum, sessionIsMultiClass, speedByCarIdx, lengthOfTrack) => {
         try {
             let sorted = carIdxLapDistPct
             .map((pct, idx) => ({ idx, pct }))
@@ -54,6 +54,7 @@ const RelativePosition = () => {
 
             const driverIndex = sorted.findIndex((driver) => driver.idx === playerCarIdx)
             const sessionDriver = sorted[driverIndex]
+            if (!sessionDriver) return;
 
             sessionDriver.position = sessionIsMultiClass ? carIdxClassPosition[playerCarIdx] : carIdxPosition[playerCarIdx]
             sessionDriver.onPitRoad = carIdxOnPitRoad[playerCarIdx]
