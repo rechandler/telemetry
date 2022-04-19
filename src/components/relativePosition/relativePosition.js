@@ -56,7 +56,7 @@ const RelativePosition = () => {
             const sessionDriver = sorted[driverIndex]
             if (!sessionDriver) return;
 
-            sessionDriver.position = sessionIsMultiClass ? carIdxClassPosition[playerCarIdx] : carIdxPosition[playerCarIdx]
+            sessionDriver.position = carIdxClassPosition[playerCarIdx] || carIdxPosition[playerCarIdx]
             sessionDriver.onPitRoad = carIdxOnPitRoad[playerCarIdx]
             sessionDriver.lapsCompleted = carIdxLapCompleted[playerCarIdx]
             sessionDriver.lapDelta = 0
