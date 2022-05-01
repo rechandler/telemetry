@@ -61,8 +61,7 @@ const RelativePosition = () => {
             sessionDriver.lapsCompleted = carIdxLapCompleted[playerCarIdx]
             sessionDriver.lapDelta = 0
             sessionDriver.speed = speedByCarIdx[playerCarIdx]
-            
-            const driverEstimateLap = carIdxEstTime[playerCarIdx]
+            console.log(sessionDriver.speed)            
             if (sessionDriver.lapsCompleted !== driverLaps) setDriverLaps(sessionDriver.lapsCompleted)
 
             const carsAhead = []

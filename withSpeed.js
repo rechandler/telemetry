@@ -1,41 +1,25 @@
 module.exports = class withSpeed {
     SPEED_INTERVAL = 1.3
-    constructor() {
+    constructor({data: {WeekendInfo: { TrackLength }}}) {
         this.speedByCarIdx = []
         this.udpateDistByCarIdx = []
-        this.lastTick = null
-        this.trackLength = null
-    }
-
-    setTrackLength(trackLength) {
-        this.trackLength = Number(trackLength.split(' ')[0])
+        this.trackLength = Number(TrackLength.split(' ')[0])
+        this.lastTick = 0
     }
 
     withSpeed(values) {
-        const { SessionTime, CarIdxLapDistPct } = values
-        // Must have both to calc speed
-        if (!SessionTime || !this.trackLength) return {
-            ...values, 
-            LengthOfTrack: this.trackLength,
-            SpeedByCarIdx: this.speedByCarIdx 
-        }
-
+        const { CarIdxLapDistPct, SessionTime } = values
         const timeDiff = SessionTime - this.lastTick
+
         if (timeDiff < this.SPEED_INTERVAL) return {
             ...values, 
             LengthOfTrack: this.trackLength,
             SpeedByCarIdx: this.speedByCarIdx 
         }
-
+        
         this.speedByCarIdx = CarIdxLapDistPct.reduce((acc, pct, idx) => {
-            if (pct < 0) {
-                // handle differently?
-                acc[idx] = -1
-                return acc
-            }
-            const lastUpdatePct = this.udpateDistByCarIdx[idx]
+            const lastUpdatePct = this.udpateDistByCarIdx[idx] || 0
             const distancePct = pct - lastUpdatePct
-            // if (distancePct < 0) return acc
             const pctOfTrackTraveled = (distancePct) * this.trackLength
             const speed = ((pctOfTrackTraveled / timeDiff) *60) *60
             acc[idx] = speed

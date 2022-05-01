@@ -92,7 +92,8 @@ const store = new Store({schema})
 store.set('telemetryWidget.displayed', false)
 store.set('relativePositionWidget.displayed', false)
 
-const iracing = require('node-irsdk').init({sessionInfoUpdateInterval: 0})
+const irsdk = require('node-irsdk')
+const iracing = irsdk.init()
 
 // const UPDATE_CHECK_INTERVAL = 10 * 60 * 1000
 const server = 'https://telemetry-lc9vbg16r-rechandler.vercel.app'
@@ -259,6 +260,8 @@ const launchTelemetry = () => {
 }
 
 const launchRelativePosition = () => {
+  const relativeIracing = irsdk.init({telemetryUpdateInterval: 100})
+
   if (store.get('relativePositionWidget.displayed')) return
 
   const relativePositionStore = store.get('relativePositionWidget')
@@ -295,14 +298,13 @@ const launchRelativePosition = () => {
     relativePositionWindow.loadURL('http://localhost:3000');
   }
 
-  const withSpeedWrapper = new withSpeed()
+  const withSpeedWrapper = new withSpeed(iracing.sessionInfo)
   
-  iracing.on('Telemetry', evt => {
+  relativeIracing.on('Telemetry', evt => {
     if(!relativePositionWindow.isDestroyed()) relativePositionWindow.webContents.send('telemetry', withSpeedWrapper.withSpeed(evt.values))
   })
   
-  iracing.on('SessionInfo', evt => {
-    withSpeedWrapper.setTrackLength(evt.data.WeekendInfo.TrackLength)
+  relativeIracing.on('SessionInfo', evt => {
     if(!relativePositionWindow.isDestroyed()) relativePositionWindow.webContents.send('sessionInfo', evt)
   })
 
