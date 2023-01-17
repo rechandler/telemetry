@@ -1,3 +1,7 @@
+body {
+  padding-top: 70px;
+  padding-bottom: 30px;
+}
 
 div.profile {
   display: grid;
@@ -6,7 +10,7 @@ div.profile {
   width: 100%;
 }
 
-.welcome {
+div.profile span {
   display: inline-block;
   align-self: center;
   color: #ccc;
@@ -14,8 +18,8 @@ div.profile {
   margin-right: 25px;
 }
 
-img {
-  width: 50px;
+div.profile img {
+  width: 30px;
   border-radius: 50%;
   align-self: center;
 }

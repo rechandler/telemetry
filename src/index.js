@@ -22,11 +22,26 @@ const getProcessFromArgs = () => {
   return App //just a default
 }
 
+const getProps = () => {
+  return window.process.argv.reduce((acc, arg) => {
+    try {
+      const parsed = JSON.parse(arg)
+      acc.props = parsed.props;
+      return acc
+    } catch(err) {
+      return acc
+    }
+  }, {})
+}
+
 const Component = getProcessFromArgs()
 
+const props = getProps();
+
+console.log(props);
 ReactDOM.render(
   <React.StrictMode>
-    <Component />
+    <Component {...props}/>
   </React.StrictMode>,
   document.getElementById('root')
 );

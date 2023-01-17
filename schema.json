@@ -1,0 +1,81 @@
+{
+  "telemetryWidget": {
+    "type": "object",
+    "description": "telemetry widgets options",
+    "properties": {
+      "displayed": {
+        "type": "boolean",
+        "description": "whether or not the widget is on the screen"
+      },
+      "position": {
+        "type": "object",
+        "properties": {
+          "x": { "type": "number"},
+          "y": { "type": "number"}
+        }
+      },
+      "positionEnabled": {
+        "type": "boolean",
+        "description": "whether or not to achnowledge the x, y cooredinates of the last move"
+      },
+      "launchEnabled": {
+        "type": "boolean",
+        "description": "whether or not to launch the widget on startup"
+      },
+      "useMetric": {
+        "type": "boolean",
+        "description": "whether or not to use metric conversions rather than imperial"
+      }
+    }
+  },
+  "tireWearWidget": {
+    "type": "object",
+    "description": "tirewear widget options",
+    "properties": {
+      "displayed": {
+        "type": "boolean",
+        "description": "whether or not the widget is currently on screen"
+      },
+      "position": {
+        "type": "object",
+        "properties": {
+          "x": { "type": "number"},
+          "y": { "type": "number"}
+        }
+      },
+      "positionEnabled": {
+        "type": "boolean",
+        "description": "whether or not to achnowledge the x, y cooredinates of the last move"
+      },
+      "launchEnabled": {
+        "type": "boolean",
+        "description": "whether or not to launch the widget on startup"
+      }
+    }
+  },
+  "relativePositionWidget": {
+    "type": "object",
+    "description": "relativePosition widget options",
+    "properties": {
+      "displayed": {
+        "type": "boolean",
+        "description": "whether or not the widget is currently on screen"
+      },
+      "position": {
+        "type": "object",
+        "properties": {
+          "x": { "type": "number"},
+          "y": { "type": "number"}
+        }
+      },
+      "positionEnabled": {
+        "type": "boolean",
+        "description": "whether or not to achnowledge the x, y cooredinates of the last move"
+      },
+      "launchEnabled": {
+        "type": "boolean",
+        "description": "whether or not to launch the widget on startup"
+      }
+    }
+  }
+}
