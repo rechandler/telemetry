@@ -1,23 +1,6 @@
 const { BrowserWindow } = require("electron");
 const connectAndRun = require('./irsdk-socket-process');
 
-const setupAutoUpdater = () => {
-  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-      type: 'info',
-      buttons: ['Restart', 'Later'],
-      title: 'Application Update',
-      message: process.platform === 'win32' ? releaseNotes : releaseName,
-      detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-    }
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-      if (returnValue.response === 0) autoUpdater.quitAndInstall()
-    })
-  })
-
-  autoUpdater.checkForUpdates()
-}
-
 let client;
 const createAppWindow = (app, store, profile) => {
   const props = JSON.stringify({props: profile});
@@ -35,7 +18,6 @@ const createAppWindow = (app, store, profile) => {
   if(app.isPackaged) {
     // Production Mode
     win.loadFile(`${__dirname}/build/index.html`)
-    setupAutoUpdater()
   } else {
     // Local Development. Must start react-dev-server
     win.loadURL('http://localhost:3000');
