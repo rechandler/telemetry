@@ -5,8 +5,7 @@ const irsdk = require('node-irsdk')
 
 const connectAndRun = (profile) => {
   const iracing = irsdk.init()
-  console.log(profile)
-  const socket = io(`ws://192.168.86.100:3030?l=server&userId=${profile.sub}`)
+  const socket = io(`ws://${getDomain()}?l=server&userId=${profile.sub}`)
   const client = feathers()
   const socketClient = socketio(socket)
   client.configure(socketClient)
@@ -21,6 +20,14 @@ const connectAndRun = (profile) => {
   })
 
   return client
+}
+
+const getDomain = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return 'seashell-app-sh5p5.ondigitalocean.app'
+  }
+
+  return '192.168.86.100:3030'
 }
 
 module.exports = connectAndRun

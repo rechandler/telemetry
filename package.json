@@ -1,7 +1,10 @@
 {
   "name": "telem_desktop",
   "version": "0.21.0",
-  "description": "",
+  "homepage": "./",
+  "author": "Ryann Chandler",
+  "description": "Telementry Data for iRacing",
+  "repository": "https://github.com/rechandler/telemetry.git",
   "main": "main.js",
   "scripts": {
     "start": "react-scripts start",
@@ -13,10 +16,9 @@
     "fix": "./node_modules/.bin/electron-rebuild.cmd",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "react-scripts build && electron-forge publish"
+    "publish": "NODE_ENV=production react-scripts build && electron-forge publish"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.63",
