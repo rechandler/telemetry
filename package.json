@@ -16,7 +16,7 @@
     "fix": "./node_modules/.bin/electron-rebuild.cmd",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "NODE_ENV=production react-scripts build && electron-forge publish"
+    "publish": "set NODE_ENV=production react-scripts build && electron-forge publish"
   },
   "keywords": [],
   "license": "ISC",
