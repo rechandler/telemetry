@@ -24,7 +24,7 @@ const connectAndRun = (profile) => {
 
 const getDomain = () => {
   if (process.env.NODE_ENV === 'production') {
-    return 'seashell-app-sh5p5.ondigitalocean.app'
+    return 'telemetry-proxy.herokuapp.com'
   }
 
   return '192.168.86.100:3030'
