@@ -7,6 +7,8 @@ const launchTelemetry = require('./src/main/telemetry-process');
 const irsdk = require('node-irsdk')
 const iracing = irsdk.init()
 
+if (require('electron-squirrel-startup')) return;
+
 const Store = require('electron-store')
 const schema = require('./schema.json')
 
