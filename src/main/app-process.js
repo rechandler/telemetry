@@ -17,7 +17,7 @@ const createAppWindow = (app, store, profile) => {
 
   if(app.isPackaged) {
     // Production Mode
-    win.loadFile(`../../build/index.html`)
+    win.loadFile(`./build/index.html`)
   } else {
     // Local Development. Must start react-dev-server
     win.loadURL('http://localhost:3000');
