@@ -36,7 +36,7 @@ const launchTelemetry = (app, store, iracing) => {
 
   if(app.isPackaged) {
     // Production Mode
-    telemetryWindow.loadFile(`${__dirname}/build/index.html`)
+    telemetryWindow.loadFile(`../../build/index.html`)
   } else {
     // Local Development. Must start react-dev-server
     telemetryWindow.loadURL('http://localhost:3000');

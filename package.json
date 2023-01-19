@@ -65,7 +65,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "telem_app",
+            "name": "telem_desktop",
             "loadingGif": "./loader.gif"
           }
         },
