@@ -1,4 +1,4 @@
-const { app, ipcMain, autoUpdater, BrowserWindow } = require('electron');
+const { app, ipcMain, autoUpdater, dialog, BrowserWindow } = require('electron');
 
 const { createAuthWindow, createLogoutWindow } = require('./src/main/auth-process');
 const createAppWindow = require('./src/main/app-process');
